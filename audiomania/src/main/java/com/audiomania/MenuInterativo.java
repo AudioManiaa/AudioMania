@@ -5,9 +5,12 @@
  * @author Joao
  */
 
-import java.util.Scanner;
-import java.util.List;
+
+package com.audiomania;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class MenuInterativo {
