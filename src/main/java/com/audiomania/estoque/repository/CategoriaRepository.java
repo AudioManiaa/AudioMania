@@ -5,6 +5,7 @@ import com.audiomania.estoque.model.Categoria;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Repositório responsável pelo armazenamento e manipulação de categorias.
@@ -51,7 +52,7 @@ public class CategoriaRepository {
     public static List<Categoria> buscarPorNome(String nome) {
         return categorias.stream()
                 .filter(c -> c.getNome().toLowerCase().contains(nome.toLowerCase()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**

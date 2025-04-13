@@ -2,6 +2,7 @@ package com.audiomania.estoque.util;
 
 import com.audiomania.estoque.model.ItemEstoque;
 import com.audiomania.estoque.model.Produto;
+import com.audiomania.estoque.repository.ProdutoRepository;
 
 import java.math.BigDecimal;
 
@@ -22,15 +23,24 @@ public class ValidadorEstoque {
             throw new IllegalArgumentException("O produto do item de estoque não pode ser nulo");
         }
 
-        if (item.getQuantidadeAtual() < 0) {
+        if (item.getQuantidade() < 0) {
             throw new IllegalArgumentException("A quantidade não pode ser negativa");
         }
 
-        if (item.getEstoqueMinimo() < 0) {
+        if (item.getQuantidadeMinima() < 0) {
             throw new IllegalArgumentException("A quantidade mínima não pode ser negativa");
         }
 
         validarProduto(item.getProduto());
+    }
+
+    public static Produto codigoProduto (String codigoProduto){
+        for (Produto produto : ProdutoRepository.listarTodos()){
+            if (produto.getCodigo().equals(codigoProduto) || produto.getCodigo().equalsIgnoreCase(codigoProduto)){
+                return produto;
+            }
+        }
+        return null;
     }
 
     /**
@@ -44,7 +54,7 @@ public class ValidadorEstoque {
             throw new IllegalArgumentException("O produto não pode ser nulo");
         }
 
-        if (produto.getSku() == null || produto.getSku().isEmpty()) {
+        if (produto.getCodigo() == null || produto.getCodigo().isEmpty() || produto.getCodigo().trim().isEmpty()) {
             throw new IllegalArgumentException("O código do produto não pode ser vazio");
         }
 

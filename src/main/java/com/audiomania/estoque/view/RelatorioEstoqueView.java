@@ -2,7 +2,6 @@ package com.audiomania.estoque.view;
 
 import com.audiomania.estoque.model.ItemEstoque;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
 
