@@ -17,7 +17,7 @@ public class AudioManiaApp {
 
     public static void main(String[] args) {
         // Inicializar o sistema com alguns dados de exemplo
-        inicializarDadosExemplo();
+        dadosExemplo();
 
         // Criar controlador e view
         EstoqueView estoqueView = new EstoqueView();
@@ -30,87 +30,89 @@ public class AudioManiaApp {
         System.out.println("Sistema encerrado.");
     }
 
-    private static void inicializarDadosExemplo() {
+    private static void dadosExemplo() {
         // Criar categorias
-        Categoria instrumentos = new Categoria(1L, "INS", "Instrumentos Musicais", "Guitarras, baixos, teclados, etc.");
-        Categoria acessorios = new Categoria(2L, "ACS", "Acessórios", "Cabos, palhetas, cordas, etc.");
-        Categoria equipamentos = new Categoria(3L, "EQP", "Equipamentos de Som", "Amplificadores, mesas de som, etc.");
+        Categoria autofalantes = new Categoria(1L, "AUT", "Autofalantes", "Woofers, tweeters, mid-range, etc");
+        Categoria acessorios = new Categoria(2L, "ACS", "Acessórios", "Cabos, conectores, interfaces, etc.");
+        Categoria equipamentos = new Categoria(3L, "EQP", "Equipamentos de Audio", "Amplificadores, processadores, etc.");
 
         // Adicionar categorias ao repositório
-        CategoriaRepository.adicionar(instrumentos);
+        CategoriaRepository.adicionar(autofalantes);
         CategoriaRepository.adicionar(acessorios);
         CategoriaRepository.adicionar(equipamentos);
 
         // Criar produtos
-        Produto guitarra = new Produto(1L, "GTR-001", "Guitarra Stratocaster",
-                "Guitarra elétrica modelo Stratocaster",
-                BigDecimal.valueOf(1200.00), BigDecimal.valueOf(1800.00),
-                "FenderBR", instrumentos);
+        Produto subwoofer = new Produto(1L, "SUB-001", "Subwoofer 12 polegadas",
+                "Subwoofer de 12 polegadas com bobina dupla",
+                BigDecimal.valueOf(450.00), BigDecimal.valueOf(750.00),
+                "JBL", autofalantes);
 
-        Produto baixo = new Produto(2L, "BX-002", "Baixo Jazz Bass",
-                "Baixo elétrico modelo Jazz Bass",
-                BigDecimal.valueOf(1500.00), BigDecimal.valueOf(2200.00),
-                "FenderBR", instrumentos);
+        Produto woofer = new Produto(2L, "WF-002", "Woofer 6x9",
+                "Par de alto-falantes 6x9 com 400W de potência",
+                BigDecimal.valueOf(280.00), BigDecimal.valueOf(450.00),
+                "Pioneer", autofalantes);
 
-        Produto teclado = new Produto(3L, "TEC-003", "Teclado Profissional",
-                "Teclado profissional com 88 teclas",
-                BigDecimal.valueOf(2500.00), BigDecimal.valueOf(3600.00),
-                "Yamaha", instrumentos);
+        Produto tweeter = new Produto(3L, "TW-003", "Kit Tweeter 300W",
+                "Kit de tweeters com 300W de potência máxima",
+                BigDecimal.valueOf(150.00), BigDecimal.valueOf(250.00),
+                "Bravox", autofalantes);
 
-        Produto cabo = new Produto(4L, "CB-004", "Cabo P10 3 metros",
-                "Cabo P10 para instrumentos com 3 metros",
-                BigDecimal.valueOf(25.00), BigDecimal.valueOf(45.00),
-                "Santo Angelo", acessorios);
+        Produto cabos = new Produto(4L, "CB-004", "Kit de Cabos RCA",
+                "Kit completo de cabos RCA para instalação",
+                BigDecimal.valueOf(45.00), BigDecimal.valueOf(85.00),
+                "Technoise", acessorios);
 
-        Produto palhetas = new Produto(5L, "PLH-005", "Pacote de Palhetas",
-                "Pacote com 10 palhetas médias",
-                BigDecimal.valueOf(15.00), BigDecimal.valueOf(30.00),
-                "Dunlop", acessorios);
+        Produto capacitor = new Produto(5L, "CAP-005", "Capacitor 1.0 Farad",
+                "Capacitor para estabilização de energia",
+                BigDecimal.valueOf(120.00), BigDecimal.valueOf(199.00),
+                "Taramps", acessorios);
 
-        Produto amplificador = new Produto(6L, "AMP-006", "Amplificador 50W",
-                "Amplificador para guitarra 50W",
-                BigDecimal.valueOf(600.00), BigDecimal.valueOf(950.00),
-                "Marshall", equipamentos);
+        Produto amplificador = new Produto(6L, "AMP-006", "Amplificador 1200W",
+                "Amplificador de 4 canais com 1200W RMS",
+                BigDecimal.valueOf(550.00), BigDecimal.valueOf(890.00),
+                "Soundigital", equipamentos);
+
 
         // Adicionar produtos ao repositório
-        ProdutoRepository.adicionar(guitarra);
-        ProdutoRepository.adicionar(baixo);
-        ProdutoRepository.adicionar(teclado);
-        ProdutoRepository.adicionar(cabo);
-        ProdutoRepository.adicionar(palhetas);
+        ProdutoRepository.adicionar(subwoofer);
+        ProdutoRepository.adicionar(woofer);
+        ProdutoRepository.adicionar(tweeter);
+        ProdutoRepository.adicionar(cabos);
+        ProdutoRepository.adicionar(capacitor);
         ProdutoRepository.adicionar(amplificador);
 
         // Criar itens de estoque
-        ItemEstoque itemGuitarra = new ItemEstoque(1L, guitarra, 5, 3, "Prateleira A1");
-        ItemEstoque itemBaixo = new ItemEstoque(2L, baixo, 3, 2, "Prateleira A2");
-        ItemEstoque itemTeclado = new ItemEstoque(3L, teclado, 2, 2, "Prateleira B1");
-        ItemEstoque itemCabo = new ItemEstoque(4L, cabo, 30, 15, "Gaveta C1");
-        ItemEstoque itemPalhetas = new ItemEstoque(5L, palhetas, 50, 25, "Gaveta C2");
-        ItemEstoque itemAmplificador = new ItemEstoque(6L, amplificador, 4, 3, "Prateleira D1");
+        ItemEstoque itemSubwoofer = new ItemEstoque(1L, subwoofer, 8, 5, "Prateleira A1");
+        ItemEstoque itemWoofer = new ItemEstoque(2L, woofer, 12, 6, "Prateleira A2");
+        ItemEstoque itemTweeter = new ItemEstoque(3L, tweeter, 15, 10, "Prateleira B1");
+        ItemEstoque itemCabos = new ItemEstoque(4L, cabos, 30, 15, "Gaveta C1");
+        ItemEstoque itemCapacitor = new ItemEstoque(5L, capacitor, 20, 10, "Gaveta C2");
+        ItemEstoque itemAmplificador = new ItemEstoque(6L, amplificador, 6, 4, "Prateleira D1");
 
         // Adicionar itens ao repositório de estoque
-        EstoqueRepository.adicionar(itemGuitarra);
-        EstoqueRepository.adicionar(itemBaixo);
-        EstoqueRepository.adicionar(itemTeclado);
-        EstoqueRepository.adicionar(itemCabo);
-        EstoqueRepository.adicionar(itemPalhetas);
+        EstoqueRepository.adicionar(itemSubwoofer);
+        EstoqueRepository.adicionar(itemWoofer);
+        EstoqueRepository.adicionar(itemTweeter);
+        EstoqueRepository.adicionar(itemCabos);
+        EstoqueRepository.adicionar(itemCapacitor);
         EstoqueRepository.adicionar(itemAmplificador);
 
         // Criar produto para o item com estoque baixo
-        Produto violino = new Produto(7L, "VLN-007", "Violino 4/4",
-                "Violino tamanho 4/4 completo com estojo",
-                BigDecimal.valueOf(800.00), BigDecimal.valueOf(1200.00),
-                "Eagle", instrumentos);
+        Produto processador = new Produto(7L, "PROC-007", "Processador de Áudio Digital",
+                "Processador DSP com 8 canais para equalização",
+                BigDecimal.valueOf(900.00), BigDecimal.valueOf(1500.00),
+                "AudioControl", equipamentos);
 
         // Adicionar o produto ao repositório
-        ProdutoRepository.adicionar(violino);
+        ProdutoRepository.adicionar(processador);
 
         // Criar item com estoque baixo para teste
-        ItemEstoque itemBaixoEstoque = new ItemEstoque(7L, violino, 1, 2, "Prateleira A3");
+        ItemEstoque itemBaixoEstoque = new ItemEstoque(7L, processador, 1, 2, "Prateleira A3");
 
         // Configurar as datas manualmente
         itemBaixoEstoque.setDataUltimaEntrada(LocalDate.now());
         itemBaixoEstoque.setDataUltimaSaida(LocalDate.now().minusDays(15));
+
 
         // Adicionar ao repositório
         EstoqueRepository.adicionar(itemBaixoEstoque);
