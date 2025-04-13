@@ -14,11 +14,11 @@ public class EstoqueView {
 
     public int exibirMenuPrincipal() {
         System.out.println("\n===== SISTEMA DE CONTROLE DE ESTOQUE =====");
-        System.out.println("1. Listar todos os itens em estoque");
-        System.out.println("2. Consultar item específico");
-        System.out.println("3. Adicionar entrada de estoque");
-        System.out.println("4. Registrar saída de estoque");
-        System.out.println("5. Verificar itens com estoque baixo");
+        System.out.println("1. Listar itens");
+        System.out.println("2. Consultar item");
+        System.out.println("3. Adicionar entrada");
+        System.out.println("4. Registrar saída");
+        System.out.println("5. Itens em baixa");
         System.out.println("0. Sair");
         System.out.print("Escolha uma opção: ");
 
