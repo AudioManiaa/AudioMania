@@ -6,14 +6,14 @@
  */
 
 
-package com.audiomania;
+package com.audiomania.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-public class MenuInterativo {
+public class MenuService {
     
     /**
      * Classe que representa uma opção do menu

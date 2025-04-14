@@ -1,63 +1,55 @@
 package com.audiomania.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import com.audiomania.controller.SistemaController;
 import com.audiomania.model.Usuario;
-import java.util.Scanner;
+import com.audiomania.service.MenuService;
+import com.audiomania.service.MenuService.OpcaoMenu;
 
-public class SistemaView {
-    private Scanner scanner;
-    private SistemaController controller;
+public class LoginView {
+    private final Scanner scanner;
+    private final SistemaController controller;
 
-    public SistemaView() {
+    public LoginView() {
         scanner = new Scanner(System.in);
         controller = new SistemaController();
     }
 
     /**
-     * Inicia a aplicação de loginpqp
+     * Inicia a aplicação de login
      * @return Usuário autenticado ou null em caso de saída
      */
     public Usuario iniciarLogin() {
-        boolean sair = false;
-        Usuario usuarioLogado = null;
-
-        while (!sair && usuarioLogado == null) {
-            exibirMenuLogin();
-            int opcao = lerOpcao();
-
-            switch (opcao) {
-                case 1:
-                    usuarioLogado = fazerLogin();
-                    break;
-                case 2:
-                    cadastrarNovoUsuario();
-                    break;
-                case 0:
-                    sair = true;
-                    System.out.println("Saindo do sistema. Obrigado!");
-                    break;
-                default:
-                    System.out.println("Opção inválida!");
-            }
+        AtomicBoolean sair = new AtomicBoolean(false);
+        AtomicReference<Usuario> usuarioLogadoRef = new AtomicReference<>(null);
+        
+        while (!sair.get() && usuarioLogadoRef.get() == null) {
+            // Criando as opções do menu de login
+            List<OpcaoMenu> opcoesLogin = new ArrayList<>();
+            
+            // Opção de login
+            opcoesLogin.add(new OpcaoMenu("Login", s -> {
+                Usuario usuario = fazerLogin();
+                if (usuario != null) {
+                    usuarioLogadoRef.set(usuario);
+                }
+            }));
+            
+            // Opção de cadastro
+            opcoesLogin.add(new OpcaoMenu("Registrar novo usuário", s -> {
+                cadastrarNovoUsuario();
+            }));
+            
+            // Exibindo o menu usando o MenuService
+            MenuService.criarMenu("========= SISTEMA AUDIO MANIA =========", opcoesLogin);
         }
-
-        return usuarioLogado;
-    }
-
-    private void exibirMenuLogin() {
-        System.out.println("\n========= SISTEMA AUDIO MANIA =========");
-        System.out.println("1. Login");
-        System.out.println("2. Registrar novo usuário");
-        System.out.println("0. Sair");
-        System.out.print("Escolha uma opção: ");
-    }
-
-    private int lerOpcao() {
-        try {
-            return Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+        
+        return usuarioLogadoRef.get();
     }
 
     private Usuario fazerLogin() {
@@ -114,4 +106,3 @@ public class SistemaView {
         scanner.close();
     }
 }
-
