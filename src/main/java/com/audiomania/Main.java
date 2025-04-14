@@ -15,7 +15,7 @@ public class Main {
             System.out.println("Nível de acesso: " + usuarioLogado.getNivelAcesso());
             System.out.println("\nAqui você pode implementar o Menu Principal com as funcionalidades do sistema");
             //FIMLOGIN
-                aaaaaaaa
+            
             //INICIOFUNMENU
 
             //FIMFUNMENU
