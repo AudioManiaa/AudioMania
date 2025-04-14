@@ -14,17 +14,17 @@ public class Main {
         Usuario usuarioLogado = view.iniciarLogin();
 
         if (usuarioLogado != null) {
-            //INICIOLOGIN
-            System.out.println("\n========= AUDIOMANIA =========");
-            System.out.println("Usuário logado: " + usuarioLogado.getLogin());
-            System.out.println("Nível de acesso: " + usuarioLogado.getNivelAcesso());
-            //FIMLOGIN
 
             //INICIOFUNMENU
             // Criando a lista de opções do menu
             List<OpcaoMenu> opcoes = new ArrayList<>();
             
             // Adicionando as opções do menu
+
+            opcoes.add(new OpcaoMenu("Usuario", scanner -> {
+                System.out.println("Usuário logado: " + usuarioLogado.getLogin());
+                System.out.println("Nível de acesso: " + usuarioLogado.getNivelAcesso());
+            }));
             
             opcoes.add(new OpcaoMenu("Estoque", scanner -> {
                 System.out.println("Funcionalidade de Estoque");
