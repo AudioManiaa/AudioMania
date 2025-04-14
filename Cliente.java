@@ -50,4 +50,12 @@ public class Cliente {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
+
+    public void exibirCliente() {
+        System.out.println("Nome: " + nome);
+        System.out.println("CPF: " + cpf);
+        System.out.println("Telefone: " + telefone);
+        System.out.println("Endereco: " + endereco); 
+        System.out.println("------------------------");
+    }
 }
