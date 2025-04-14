@@ -21,9 +21,6 @@ public class EstoqueController {
     public void iniciarSistema() {
         System.out.println("Inicializando sistema de estoque da AudioMania Som Automotivo...");
 
-        // Carrega dados de exemplo
-        EstoqueRepository.carregarDadosExemplo();
-
         boolean executando = true;
 
         while (executando) {

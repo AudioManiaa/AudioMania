@@ -24,7 +24,7 @@ public class EstoqueView {
 
     // Menu principal
     public int exibirMenuPrincipal() {
-        System.out.println("\n===== SISTEMA DE CONTROLE DE ESTOQUE - AUDIOMANIA SOM AUTOMOTIVO =====");
+        System.out.println("\n===== SISTEMA DE CONTROLE DE ESTOQUE =====");
         System.out.println("1. Listar todos os itens em estoque");
         System.out.println("2. Consultar estoque");
         System.out.println("3. Adicionar entrada em estoque");
@@ -157,7 +157,7 @@ public class EstoqueView {
         int totalItens = 0;
         int itensAbaixoMinimo = 0;
 
-        System.out.println("\n===== RELATÓRIO GERAL DE ESTOQUE - AUDIOMANIA SOM AUTOMOTIVO =====");
+        System.out.println("\n===== RELATÓRIO GERAL DE ESTOQUE =====");
         System.out.println("Data do relatório: " + LocalDate.now().format(dateFormatter));
         System.out.println("\nITENS EM ESTOQUE:");
 
@@ -196,7 +196,7 @@ public class EstoqueView {
             return;
         }
 
-        System.out.println("\n===== RELATÓRIO DE ITENS COM ESTOQUE BAIXO - AUDIOMANIA SOM AUTOMOTIVO =====");
+        System.out.println("\n===== RELATÓRIO DE ITENS COM ESTOQUE BAIXO =====");
         System.out.println("Data do relatório: " + LocalDate.now().format(dateFormatter));
 
         System.out.printf("%-5s | %-10s | %-30s | %-10s | %-10s | %-15s%n",
