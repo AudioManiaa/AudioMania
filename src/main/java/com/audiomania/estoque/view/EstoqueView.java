@@ -1,24 +1,35 @@
 package com.audiomania.estoque.view;
 
 import com.audiomania.estoque.model.ItemEstoque;
+import com.audiomania.estoque.model.Produto;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class EstoqueView {
     private final Scanner scanner;
+    private final NumberFormat currencyFormatter;
+    private final DateTimeFormatter dateFormatter;
 
     public EstoqueView() {
         this.scanner = new Scanner(System.in);
+        this.currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        this.dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     }
 
+    // Menu principal
     public int exibirMenuPrincipal() {
-        System.out.println("\n===== SISTEMA DE CONTROLE DE ESTOQUE =====");
-        System.out.println("1. Listar itens");
-        System.out.println("2. Consultar item");
-        System.out.println("3. Adicionar entrada");
-        System.out.println("4. Registrar saída");
-        System.out.println("5. Itens em baixa");
+        System.out.println("\n===== SISTEMA DE CONTROLE DE ESTOQUE - AUDIOMANIA SOM AUTOMOTIVO =====");
+        System.out.println("1. Listar todos os itens em estoque");
+        System.out.println("2. Consultar estoque");
+        System.out.println("3. Adicionar entrada em estoque");
+        System.out.println("4. Registrar saída em estoque");
+        System.out.println("5. Relatórios");
         System.out.println("0. Sair");
         System.out.print("Escolha uma opção: ");
 
@@ -29,113 +40,183 @@ public class EstoqueView {
         }
     }
 
+    // Menu de consulta
+    public int exibirMenuConsulta() {
+        System.out.println("\n===== CONSULTA DE ESTOQUE =====");
+        System.out.println("1. Consultar item por ID");
+        System.out.println("2. Consultar por código do produto");
+        System.out.println("3. Consultar itens com estoque baixo");
+        System.out.println("0. Voltar");
+        System.out.print("Escolha uma opção: ");
+
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // Menu de relatórios
+    public int exibirMenuRelatorios() {
+        System.out.println("\n===== RELATÓRIOS DE ESTOQUE =====");
+        System.out.println("1. Relatório Geral de Estoque");
+        System.out.println("2. Relatório de Itens com Estoque Baixo");
+        System.out.println("3. Relatório de Valor do Estoque");
+        System.out.println("0. Voltar");
+        System.out.print("Escolha uma opção: ");
+
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // Métodos para exibir listas e detalhes de itens
     public void exibirListaItensEstoque(List<ItemEstoque> itens) {
-        System.out.println("\n===== LISTA DE ITENS EM ESTOQUE =====");
-        if (itens.isEmpty()) {
-            System.out.println("Não há itens cadastrados no estoque.");
+        if (itens == null || itens.isEmpty()) {
+            System.out.println("\nNenhum item encontrado no estoque.");
             return;
         }
 
-        System.out.printf("%-5s %-20s %-30s %-10s %-15s %-15s\n",
-                "ID", "CÓDIGO", "PRODUTO", "QTDE", "MÍNIMO", "LOCALIZAÇÃO");
+        System.out.println("\n===== LISTA DE ITENS EM ESTOQUE - SOM AUTOMOTIVO =====");
+        System.out.printf("%-5s | %-10s | %-30s | %-10s | %-15s | %-8s%n",
+                "ID", "CÓDIGO", "PRODUTO", "QTDE", "FABRICANTE", "STATUS");
+        System.out.println("-------------------------------------------------------------------------------------");
 
         for (ItemEstoque item : itens) {
-            System.out.printf("%-5d %-20s %-30s %-10d %-15d %-15s\n",
+            Produto produto = item.getProduto();
+            System.out.printf("%-5d | %-10s | %-30s | %-10d | %-15s | %-8s%n",
                     item.getId(),
-                    item.getProduto().getCodigo(),
-                    item.getProduto().getNome(),
+                    produto.getCodigo(),
+                    produto.getNome(),
                     item.getQuantidade(),
-                    item.getQuantidadeMinima(),
-                    item.getLocalizacao());
+                    produto.getFabricante(),
+                    item.getStatusEstoque());
         }
     }
 
     public void exibirDetalhesItemEstoque(ItemEstoque item) {
         if (item == null) {
-            System.out.println("Item não encontrado!");
+            System.out.println("\nItem não encontrado.");
             return;
         }
 
-        System.out.println("\n===== DETALHES DO ITEM DE ESTOQUE =====");
+        Produto produto = item.getProduto();
+
+        System.out.println("\n===== DETALHES DO ITEM =====");
         System.out.println("ID: " + item.getId());
-        System.out.println("Produto: " + item.getProduto().getNome());
-        System.out.println("Código: " + item.getProduto().getCodigo());
+        System.out.println("Produto: " + produto.getNome() + " (Código: " + produto.getCodigo() + ")");
+        System.out.println("Categoria: " + produto.getCategoria().getNome());
+        System.out.println("Fabricante: " + produto.getFabricante());
+        System.out.println("Localização: " + item.getLocalizacao());
         System.out.println("Quantidade em estoque: " + item.getQuantidade());
         System.out.println("Quantidade mínima: " + item.getQuantidadeMinima());
-        System.out.println("Localização: " + item.getLocalizacao());
-        System.out.println("Preço de compra: R$ " + item.getProduto().getPrecoCompra());
-        System.out.println("Preço de venda: R$ " + item.getProduto().getPrecoVenda());
-
-        if (item.getDataUltimaEntrada() != null) {
-            System.out.println("Última entrada: " + item.getDataUltimaEntrada());
-        }
-
-        if (item.getDataUltimaSaida() != null) {
-            System.out.println("Última saída: " + item.getDataUltimaSaida());
-        }
-
-        if (item.isEstoqueBaixo()) {
-            System.out.println("ALERTA: Este item está com estoque abaixo do mínimo!");
-        }
+        System.out.println("Status: " + item.getStatusEstoque());
+        System.out.println("Preço de compra: " + currencyFormatter.format(produto.getPrecoCompra()));
+        System.out.println("Preço de venda: " + currencyFormatter.format(produto.getPrecoVenda()));
+        System.out.println("Margem de lucro: " + produto.getMargemLucro() + "%");
+        System.out.println("Valor total em estoque: " + currencyFormatter.format(item.getValorTotalEstoque()));
+        System.out.println("Última entrada: " + item.getDataUltimaEntradaFormatada());
+        System.out.println("Última saída: " + item.getDataUltimaSaidaFormatada());
+        System.out.println("Descrição: " + produto.getDescricao());
     }
 
-    public void exibirItensBaixoEstoque(List<ItemEstoque> itens) {
-        System.out.println("\n===== ITENS COM ESTOQUE ABAIXO DO MÍNIMO =====");
-
-        if (itens.isEmpty()) {
-            System.out.println("Não há itens com estoque abaixo do mínimo.");
-            return;
-        }
-
-        System.out.printf("%-5s %-20s %-30s %-10s %-15s\n",
-                "ID", "CÓDIGO", "PRODUTO", "ATUAL", "MÍNIMO");
-
-        for (ItemEstoque item : itens) {
-            System.out.printf("%-5d %-20s %-30s %-10d %-15d\n",
-                    item.getId(),
-                    item.getProduto().getCodigo(),
-                    item.getProduto().getNome(),
-                    item.getQuantidade(),
-                    item.getQuantidadeMinima());
-        }
-    }
-
-    public Long solicitarIdProduto() {
-        System.out.print("Informe o ID do produto: ");
+    // Métodos para solicitar entradas do usuário
+    public Long solicitarId(String tipo) {
+        System.out.print("\nDigite o ID do " + tipo + ": ");
         try {
             return Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("ID inválido! Informe um número.");
-            return solicitarIdProduto();
+            return null;
         }
     }
 
-    public Long solicitarIdItemEstoque() {
-        System.out.print("Informe o ID do item de estoque: ");
-        try {
-            return Long.parseLong(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("ID inválido! Informe um número.");
-            return solicitarIdItemEstoque();
-        }
+    public String solicitarCodigoProduto() {
+        System.out.print("\nDigite o código do produto: ");
+        return scanner.nextLine().trim();
     }
 
     public int solicitarQuantidade(String tipo) {
-        System.out.print("Informe a quantidade para " + tipo + ": ");
+        System.out.print("\nDigite a quantidade para " + tipo + ": ");
         try {
-            int quantidade = Integer.parseInt(scanner.nextLine().trim());
-            if (quantidade <= 0) {
-                System.out.println("A quantidade deve ser maior que zero!");
-                return solicitarQuantidade(tipo);
-            }
-            return quantidade;
+            return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("Quantidade inválida! Informe um número.");
-            return solicitarQuantidade(tipo);
+            return -1;
         }
     }
 
-    public void exibirMensagem(String mensagem) {
-        System.out.println("\n" + mensagem);
+    // Métodos para relatórios
+    public void exibirRelatorioGeral(List<ItemEstoque> itens) {
+        if (itens == null || itens.isEmpty()) {
+            System.out.println("\nNenhum item encontrado no estoque.");
+            return;
+        }
+
+        BigDecimal valorTotal = BigDecimal.ZERO;
+        int totalItens = 0;
+        int itensAbaixoMinimo = 0;
+
+        System.out.println("\n===== RELATÓRIO GERAL DE ESTOQUE - AUDIOMANIA SOM AUTOMOTIVO =====");
+        System.out.println("Data do relatório: " + LocalDate.now().format(dateFormatter));
+        System.out.println("\nITENS EM ESTOQUE:");
+
+        System.out.printf("%-5s | %-10s | %-30s | %-8s | %-12s | %-12s%n",
+                "ID", "CÓDIGO", "PRODUTO", "QTDE", "VALOR UNIT.", "VALOR TOTAL");
+        System.out.println("--------------------------------------------------------------------------------------");
+
+        for (ItemEstoque item : itens) {
+            Produto produto = item.getProduto();
+            BigDecimal valorTotalItem = item.getValorTotalEstoque();
+            valorTotal = valorTotal.add(valorTotalItem);
+            totalItens += item.getQuantidade();
+
+            if (item.isEstoqueBaixo()) {
+                itensAbaixoMinimo++;
+            }
+
+            System.out.printf("%-5d | %-10s | %-30s | %-8d | %-12s | %-12s%n",
+                    item.getId(),
+                    produto.getCodigo(),
+                    produto.getNome(),
+                    item.getQuantidade(),
+                    currencyFormatter.format(produto.getPrecoCompra()),
+                    currencyFormatter.format(valorTotalItem));
+        }
+
+        System.out.println("--------------------------------------------------------------------------------------");
+        System.out.println("Total de produtos em estoque: " + totalItens);
+        System.out.println("Valor total em estoque: " + currencyFormatter.format(valorTotal));
+        System.out.println("Produtos abaixo do estoque mínimo: " + itensAbaixoMinimo);
+    }
+
+    public void exibirRelatorioBaixoEstoque(List<ItemEstoque> itensBaixo) {
+        if (itensBaixo == null || itensBaixo.isEmpty()) {
+            System.out.println("\nNão há itens com estoque baixo.");
+            return;
+        }
+
+        System.out.println("\n===== RELATÓRIO DE ITENS COM ESTOQUE BAIXO - AUDIOMANIA SOM AUTOMOTIVO =====");
+        System.out.println("Data do relatório: " + LocalDate.now().format(dateFormatter));
+
+        System.out.printf("%-5s | %-10s | %-30s | %-10s | %-10s | %-15s%n",
+                "ID", "CÓDIGO", "PRODUTO", "ATUAL", "MÍNIMO", "NECESSÁRIO");
+        System.out.println("--------------------------------------------------------------------------------------");
+
+        for (ItemEstoque item : itensBaixo) {
+            Produto produto = item.getProduto();
+            int necessario = item.getQuantidadeMinima() - item.getQuantidade();
+
+            System.out.printf("%-5d | %-10s | %-30s | %-10d | %-10d | %-15d%n",
+                    item.getId(),
+                    produto.getCodigo(),
+                    produto.getNome(),
+                    item.getQuantidade(),
+                    item.getQuantidadeMinima(),
+                    necessario);
+        }
+
+        System.out.println("--------------------------------------------------------------------------------------");
+        System.out.println("Total de itens com estoque baixo: " + itensBaixo.size());
     }
 }

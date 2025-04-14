@@ -1,6 +1,7 @@
 package com.audiomania.estoque.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Produto {
     private Long id;
@@ -12,6 +13,7 @@ public class Produto {
     private String fabricante;
     private Categoria categoria;
 
+    // Construtores
     public Produto() {
     }
 
@@ -93,6 +95,27 @@ public class Produto {
         this.categoria = categoria;
     }
 
+    // Cálculo de margem de lucro
+    public BigDecimal getMargemLucro() {
+        if (precoCompra == null || precoCompra.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return precoVenda.subtract(precoCompra).divide(precoCompra, 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Produto produto = (Produto) o;
+        return Objects.equals(id, produto.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     @Override
     public String toString() {
         return "Produto{" +
@@ -100,7 +123,7 @@ public class Produto {
                 ", codigo='" + codigo + '\'' +
                 ", nome='" + nome + '\'' +
                 ", precoVenda=" + precoVenda +
-                ", categoria=" + categoria.getNome() +
+                ", categoria=" + (categoria != null ? categoria.getNome() : "N/A") +
                 '}';
     }
 }

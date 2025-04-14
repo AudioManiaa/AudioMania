@@ -1,5 +1,7 @@
 package com.audiomania.estoque.model;
 
+import java.util.Objects;
+
 public class Categoria {
     private Long id;
     private String codigo;
@@ -16,7 +18,6 @@ public class Categoria {
         this.descricao = descricao;
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -50,7 +51,24 @@ public class Categoria {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Categoria categoria = (Categoria) o;
+        return Objects.equals(id, categoria.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
     public String toString() {
-        return nome;
+        return "Categoria{" +
+                "id=" + id +
+                ", codigo='" + codigo + '\'' +
+                ", nome='" + nome + '\'' +
+                '}';
     }
 }

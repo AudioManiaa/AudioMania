@@ -1,6 +1,9 @@
 package com.audiomania.estoque.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class ItemEstoque {
     private Long id;
@@ -11,40 +14,19 @@ public class ItemEstoque {
     private LocalDate dataUltimaEntrada;
     private LocalDate dataUltimaSaida;
 
+    // Construtores
     public ItemEstoque() {
     }
 
-    public ItemEstoque(Long id, Produto produto, int quantidade,
-                       int quantidadeMinima, String localizacao) {
+    public ItemEstoque(Long id, Produto produto, int quantidade, int quantidadeMinima,
+                       String localizacao, LocalDate dataUltimaEntrada, LocalDate dataUltimaSaida) {
         this.id = id;
         this.produto = produto;
         this.quantidade = quantidade;
         this.quantidadeMinima = quantidadeMinima;
         this.localizacao = localizacao;
-        this.dataUltimaEntrada = LocalDate.now();
-    }
-
-    public boolean isEstoqueBaixo() {
-        return quantidade <= quantidadeMinima;
-    }
-
-    public void adicionarEstoque(int quantidade) {
-        if (quantidade <= 0) {
-            throw new IllegalArgumentException("A quantidade deve ser maior que zero");
-        }
-        this.quantidade += quantidade;
-        this.dataUltimaEntrada = LocalDate.now();
-    }
-
-    public void removerEstoque(int quantidade) {
-        if (quantidade <= 0) {
-            throw new IllegalArgumentException("A quantidade deve ser maior que zero");
-        }
-        if (this.quantidade < quantidade) {
-            throw new IllegalArgumentException("Quantidade insuficiente em estoque");
-        }
-        this.quantidade -= quantidade;
-        this.dataUltimaSaida = LocalDate.now();
+        this.dataUltimaEntrada = dataUltimaEntrada;
+        this.dataUltimaSaida = dataUltimaSaida;
     }
 
     // Getters e Setters
@@ -104,12 +86,64 @@ public class ItemEstoque {
         this.dataUltimaSaida = dataUltimaSaida;
     }
 
+    // Métodos de negócio
+    public boolean isEstoqueBaixo() {
+        return quantidade < quantidadeMinima;
+    }
+
+    public String getStatusEstoque() {
+        if (quantidade <= 0) {
+            return "ESGOTADO";
+        } else if (isEstoqueBaixo()) {
+            return "BAIXO";
+        } else {
+            return "NORMAL";
+        }
+    }
+
+    public BigDecimal getValorTotalEstoque() {
+        if (produto != null && produto.getPrecoCompra() != null) {
+            return produto.getPrecoCompra().multiply(new BigDecimal(quantidade));
+        }
+        return BigDecimal.ZERO;
+    }
+
+    public String getDataUltimaEntradaFormatada() {
+        return formatarData(dataUltimaEntrada);
+    }
+
+    public String getDataUltimaSaidaFormatada() {
+        return formatarData(dataUltimaSaida);
+    }
+
+    private String formatarData(LocalDate data) {
+        if (data == null) {
+            return "N/A";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return data.format(formatter);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemEstoque that = (ItemEstoque) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     @Override
     public String toString() {
         return "ItemEstoque{" +
-                "produto=" + produto.getNome() +
+                "id=" + id +
+                ", produto=" + (produto != null ? produto.getNome() : "N/A") +
                 ", quantidade=" + quantidade +
-                ", localizacao='" + localizacao + '\'' +
+                ", status=" + getStatusEstoque() +
                 '}';
     }
 }
