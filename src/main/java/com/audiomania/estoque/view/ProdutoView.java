@@ -58,4 +58,30 @@ public class ProdutoView {
         }
     }
 
+    // Exibir detalhes de um produto
+    public void exibirDetalhesProduto(Produto produto) {
+        if (produto == null) {
+            System.out.println("\nProduto não encontrado.");
+            return;
+        }
+
+        System.out.println("\n===== DETALHES DO PRODUTO =====");
+        System.out.println("ID: " + produto.getId());
+        System.out.println("Código: " + produto.getCodigo());
+        System.out.println("Nome: " + produto.getNome());
+        System.out.println("Descrição: " + produto.getDescricao());
+        System.out.println("Categoria: " + produto.getCategoria().getNome());
+        System.out.println("Marca: " + produto.getFabricante());
+        System.out.println("Preço de compra: " + currencyFormatter.format(produto.getPrecoCompra()));
+        System.out.println("Preço de venda: " + currencyFormatter.format(produto.getPrecoVenda()));
+        System.out.println("Margem de lucro: " + produto.getMargemLucro() + "%");
+    }
+
+    // Solicitar código do produto
+    public String solicitarCodigoProduto() {
+        System.out.print("\nDigite o código do produto: ");
+        return scanner.nextLine().trim();
+    }
+
+
 
