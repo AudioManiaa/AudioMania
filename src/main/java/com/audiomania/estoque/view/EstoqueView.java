@@ -2,6 +2,7 @@ package com.audiomania.estoque.view;
 
 import com.audiomania.estoque.model.ItemEstoque;
 import com.audiomania.estoque.model.Produto;
+import com.audiomania.estoque.repository.ProdutoRepository;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -143,6 +144,80 @@ public class EstoqueView {
             return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
             return -1;
+        }
+    }
+
+    // Menu de produtos
+    public int exibirMenuProdutos() {
+        System.out.println("\n===== MENU DE PRODUTOS =====");
+        System.out.println("1. Cadastrar novo produto");
+        System.out.println("2. Listar produtos");
+        System.out.println("0. Voltar");
+        System.out.print("Escolha uma opção: ");
+
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // Método para cadastrar um novo produto
+    public Produto cadastrarProduto(ProdutoRepository produtoRepository) {
+        System.out.println("\n===== CADASTRAR NOVO PRODUTO =====");
+
+        System.out.print("Código do produto: ");
+        String codigo = scanner.nextLine();
+
+        System.out.print("Nome do produto: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Descrição: ");
+        String descricao = scanner.nextLine();
+
+        System.out.print("Preço de compra (R$): ");
+        BigDecimal precoCompra = new BigDecimal(scanner.nextLine());
+
+        System.out.print("Preço de venda (R$): ");
+        BigDecimal precoVenda = new BigDecimal(scanner.nextLine());
+
+        System.out.print("Fabricante/Marca: ");
+        String fabricante = scanner.nextLine();
+
+        System.out.print("Categoria: ");
+        String categoria = scanner.nextLine();
+
+        // Criar e salvar o produto
+        Produto novoProduto = produtoRepository.criarProduto(
+                codigo, nome, descricao, precoCompra, precoVenda, fabricante,
+                new Categoria(null, "CAT" + System.currentTimeMillis(), categoria, ""));
+
+        System.out.println("\nProduto cadastrado com sucesso!");
+        System.out.println("ID do produto: " + novoProduto.getId());
+
+        return novoProduto;
+    }
+
+    // Método para listar produtos
+    public void listarProdutos(List<Produto> produtos) {
+        if (produtos == null || produtos.isEmpty()) {
+            System.out.println("\nNenhum produto cadastrado.");
+            return;
+        }
+
+        System.out.println("\n===== LISTA DE PRODUTOS =====");
+        System.out.printf("%-5s | %-10s | %-30s | %-12s | %-12s | %-15s%n",
+                "ID", "CÓDIGO", "NOME", "PREÇO COMPRA", "PREÇO VENDA", "FABRICANTE");
+        System.out.println("-------------------------------------------------------------------------------------");
+
+        for (Produto produto : produtos) {
+            System.out.printf("%-5s | %-10s | %-30s | %-12s | %-12s | %-15s%n",
+                    produto.getId(),
+                    produto.getCodigo(),
+                    produto.getNome(),
+                    currencyFormatter.format(produto.getPrecoCompra()),
+                    currencyFormatter.format(produto.getPrecoVenda()),
+                    produto.getFabricante());
         }
     }
 
