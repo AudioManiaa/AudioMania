@@ -156,6 +156,13 @@ public class ProdutoView {
 
         return produto;
     }
+    // Confirmar exclusão de produto
+    public boolean confirmarExclusao() {
+        System.out.print("\nConfirmar exclusão do produto? (S/N): ");
+        String resposta = scanner.nextLine().trim().toUpperCase();
+        return resposta.equals("S");
+    }
+}
 
 
 
