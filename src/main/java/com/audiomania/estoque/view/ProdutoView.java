@@ -18,3 +18,21 @@ public class ProdutoView {
         this.currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     }
 
+    // Menu para gerenciamento de produtos
+    public int exibirMenuProdutos() {
+        System.out.println("\n===== GERENCIAMENTO DE PRODUTOS =====");
+        System.out.println("1. Listar todos os produtos");
+        System.out.println("2. Buscar produto por código");
+        System.out.println("3. Cadastrar novo produto");
+        System.out.println("4. Editar produto existente");
+        System.out.println("5. Remover produto");
+        System.out.println("0. Voltar");
+        System.out.print("Escolha uma opção: ");
+
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
