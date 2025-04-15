@@ -2,7 +2,6 @@ package com.audiomania.estoque.view;
 
 import com.audiomania.estoque.model.ItemEstoque;
 import com.audiomania.estoque.model.Produto;
-import com.audiomania.estoque.repository.ProdutoRepository;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -31,6 +30,7 @@ public class EstoqueView {
         System.out.println("3. Adicionar entrada em estoque");
         System.out.println("4. Registrar saída em estoque");
         System.out.println("5. Relatórios");
+        System.out.println("6. Gerenciar Produtos"); // Nova opção
         System.out.println("0. Sair");
         System.out.print("Escolha uma opção: ");
 
@@ -161,66 +161,6 @@ public class EstoqueView {
             return -1;
         }
     }
-
-    // Método para cadastrar um novo produto
-    public Produto cadastrarProduto(ProdutoRepository produtoRepository) {
-        System.out.println("\n===== CADASTRAR NOVO PRODUTO =====");
-
-        System.out.print("Código do produto: ");
-        String codigo = scanner.nextLine();
-
-        System.out.print("Nome do produto: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("Descrição: ");
-        String descricao = scanner.nextLine();
-
-        System.out.print("Preço de compra (R$): ");
-        BigDecimal precoCompra = new BigDecimal(scanner.nextLine());
-
-        System.out.print("Preço de venda (R$): ");
-        BigDecimal precoVenda = new BigDecimal(scanner.nextLine());
-
-        System.out.print("Fabricante/Marca: ");
-        String fabricante = scanner.nextLine();
-
-        System.out.print("Categoria: ");
-        String categoria = scanner.nextLine();
-
-        // Criar e salvar o produto
-        Produto novoProduto = produtoRepository.criarProduto(
-                codigo, nome, descricao, precoCompra, precoVenda, fabricante,
-                new Categoria(null, "CAT" + System.currentTimeMillis(), categoria, ""));
-
-        System.out.println("\nProduto cadastrado com sucesso!");
-        System.out.println("ID do produto: " + novoProduto.getId());
-
-        return novoProduto;
-    }
-
-    // Método para listar produtos
-    public void listarProdutos(List<Produto> produtos) {
-        if (produtos == null || produtos.isEmpty()) {
-            System.out.println("\nNenhum produto cadastrado.");
-            return;
-        }
-
-        System.out.println("\n===== LISTA DE PRODUTOS =====");
-        System.out.printf("%-5s | %-10s | %-30s | %-12s | %-12s | %-15s%n",
-                "ID", "CÓDIGO", "NOME", "PREÇO COMPRA", "PREÇO VENDA", "FABRICANTE");
-        System.out.println("-------------------------------------------------------------------------------------");
-
-        for (Produto produto : produtos) {
-            System.out.printf("%-5s | %-10s | %-30s | %-12s | %-12s | %-15s%n",
-                    produto.getId(),
-                    produto.getCodigo(),
-                    produto.getNome(),
-                    currencyFormatter.format(produto.getPrecoCompra()),
-                    currencyFormatter.format(produto.getPrecoVenda()),
-                    produto.getFabricante());
-        }
-    }
-
     // Métodos para relatórios
     public void exibirRelatorioGeral(List<ItemEstoque> itens) {
         if (itens == null || itens.isEmpty()) {

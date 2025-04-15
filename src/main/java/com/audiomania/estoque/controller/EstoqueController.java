@@ -215,6 +215,8 @@ public class EstoqueController {
         }
     }
 
+
+
     public void menuRelatorios() {
         boolean voltarMenu = false;
 
