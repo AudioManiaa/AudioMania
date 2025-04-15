@@ -82,6 +82,80 @@ public class ProdutoView {
         System.out.print("\nDigite o código do produto: ");
         return scanner.nextLine().trim();
     }
+    // Método para cadastrar um novo produto
+    public Produto solicitarDadosProduto(List<Categoria> categorias) {
+        Produto produto = new Produto();
+
+        System.out.println("\n===== CADASTRO DE PRODUTO =====");
+
+        System.out.print("Código do produto: ");
+        produto.setCodigo(scanner.nextLine().trim());
+
+        System.out.print("Nome do produto: ");
+        produto.setNome(scanner.nextLine().trim());
+
+        System.out.print("Descrição: ");
+        produto.setDescricao(scanner.nextLine().trim());
+
+        System.out.print("Marca: ");
+        produto.setFabricante(scanner.nextLine().trim());
+
+        // Exibir categorias disponíveis
+        System.out.println("\nCategorias disponíveis:");
+        for (Categoria categoria : categorias) {
+            System.out.println(categoria.getId() + " - " + categoria.getNome());
+        }
+
+        // Solicitar categoria
+        while (true) {
+            System.out.print("ID da categoria: ");
+            try {
+                Long categoriaId = Long.parseLong(scanner.nextLine().trim());
+                boolean categoriaEncontrada = false;
+
+                for (Categoria categoria : categorias) {
+                    if (categoria.getId().equals(categoriaId)) {
+                        produto.setCategoria(categoria);
+                        categoriaEncontrada = true;
+                        break;
+                    }
+                }
+
+                if (categoriaEncontrada) {
+                    break;
+                } else {
+                    System.out.println("Categoria não encontrada. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, digite um número válido.");
+            }
+        }
+
+        // Solicitar preços
+        while (true) {
+            System.out.print("Preço de compra (R$): ");
+            try {
+                BigDecimal precoCompra = new BigDecimal(scanner.nextLine().trim().replace(",", "."));
+                produto.setPrecoCompra(precoCompra);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, digite um valor válido (Ex: 99.90).");
+            }
+        }
+
+        while (true) {
+            System.out.print("Preço de venda (R$): ");
+            try {
+                BigDecimal precoVenda = new BigDecimal(scanner.nextLine().trim().replace(",", "."));
+                produto.setPrecoVenda(precoVenda);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, digite um valor válido (Ex: 149.90).");
+            }
+        }
+
+        return produto;
+    }
 
 
 
