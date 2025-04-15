@@ -53,6 +53,10 @@ public class EstoqueController {
                     menuRelatorios();
                     break;
 
+                case 6:
+                    gerenciarProdutos();
+                    break;
+
                 default:
                     System.out.println("\nOpção inválida! Por favor, tente novamente.");
                     break;
