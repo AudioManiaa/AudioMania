@@ -5,6 +5,7 @@ import com.audiomania.estoque.model.ItemEstoque;
 import com.audiomania.estoque.model.Produto;
 import com.audiomania.estoque.repository.EstoqueRepository;
 import com.audiomania.estoque.view.EstoqueView;
+import com.audiomania.estoque.view.ProdutoView;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -215,7 +216,113 @@ public class EstoqueController {
         }
     }
 
+    // Adicionar como atributo da classe EstoqueController
+    private ProdutoView produtoView = new ProdutoView();
 
+    // Adicionar este método para gerenciar produtos
+    public void gerenciarProdutos() {
+        int opcao;
+        do {
+            opcao = produtoView.exibirMenuProdutos();
+            switch (opcao) {
+                case 1:
+                    listarProdutos();
+                    break;
+                case 2:
+                    buscarProdutoPorCodigo();
+                    break;
+                case 3:
+                    cadastrarProduto();
+                    break;
+                case 4:
+                    editarProduto();
+                    break;
+                case 5:
+                    removerProduto();
+                    break;
+                case 0:
+                    System.out.println("Voltando ao menu principal...");
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        } while (opcao != 0);
+    }
+
+    // Listar todos os produtos
+    private void listarProdutos() {
+        List<Produto> produtos = EstoqueRepository.listarProdutos();
+        produtoView.exibirListaProdutos(produtos);
+    }
+
+    // Buscar produto por código
+    private void buscarProdutoPorCodigo() {
+        String codigo = produtoView.solicitarCodigoProduto();
+        Produto produto = EstoqueRepository.buscarProdutoPorCodigo(codigo);
+        produtoView.exibirDetalhesProduto(produto);
+    }
+
+    // Cadastrar novo produto
+    private void cadastrarProduto() {
+        List<Categoria> categorias = EstoqueRepository.listarCategorias();
+        if (categorias.isEmpty()) {
+            System.out.println("\nNão há categorias cadastradas. Cadastre uma categoria primeiro.");
+            return;
+        }
+
+        Produto novoProduto = produtoView.solicitarDadosProduto(categorias);
+        EstoqueRepository.adicionarProduto(novoProduto);
+        System.out.println("\nProduto cadastrado com sucesso!");
+    }
+
+    // Editar produto existente
+    private void editarProduto() {
+        String codigo = produtoView.solicitarCodigoProduto();
+        Produto produto = EstoqueRepository.buscarProdutoPorCodigo(codigo);
+
+        if (produto == null) {
+            System.out.println("\nProduto não encontrado.");
+            return;
+        }
+
+        produtoView.exibirDetalhesProduto(produto);
+        List<Categoria> categorias = EstoqueRepository.listarCategorias();
+        Produto produtoAtualizado = produtoView.solicitarDadosProduto(categorias);
+
+        // Manter o ID original
+        produtoAtualizado.setId(produto.getId());
+
+        boolean sucesso = EstoqueRepository.atualizarProduto(produtoAtualizado);
+        if (sucesso) {
+            System.out.println("\nProduto atualizado com sucesso!");
+        } else {
+            System.out.println("\nErro ao atualizar o produto.");
+        }
+    }
+
+    // Remover produto
+    private void removerProduto() {
+        String codigo = produtoView.solicitarCodigoProduto();
+        Produto produto = EstoqueRepository.buscarProdutoPorCodigo(codigo);
+
+        if (produto == null) {
+            System.out.println("\nProduto não encontrado.");
+            return;
+        }
+
+        produtoView.exibirDetalhesProduto(produto);
+
+        if (produtoView.confirmarExclusao()) {
+            boolean sucesso = EstoqueRepository.removerProduto(produto.getId());
+            if (sucesso) {
+                System.out.println("\nProduto removido com sucesso!");
+            } else {
+                System.out.println("\nErro ao remover o produto. Verifique se o produto está associado a itens de estoque.");
+            }
+        } else {
+            System.out.println("\nOperação cancelada.");
+        }
+    }
 
     public void menuRelatorios() {
         boolean voltarMenu = false;
