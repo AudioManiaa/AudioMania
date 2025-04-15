@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Funcionario {
@@ -54,8 +56,8 @@ public class Funcionario {
     }
     
     public void adicionarFuncionario() {
+        List<Funcionario> funcionarios = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
-        Funcionario novoFuncionario = new Funcionario(nome, cpf, telefone, endereco);
         
         System.out.println("Cadastro de Funcionario");
         System.out.print("Nome: ");
@@ -67,10 +69,8 @@ public class Funcionario {
         System.out.println("Endereco: ");
         String endereco = sc.nextLine();
         
-        novoFuncionario.setNome(nome);
-        novoFuncionario.setCpf(cpf);
-        novoFuncionario.setTelefone(telefone);
-        novoFuncionario.setEndereco(endereco);
+        Funcionario novFuncionario = new Funcionario(nome, cpf, telefone, endereco);
+        funcionarios.add(novFuncionario);
         
         System.out.println("Funcionario cadastrado com sucesso!");
     }
