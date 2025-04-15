@@ -244,6 +244,8 @@ public class EstoqueController {
                 case 5:
                     removerProduto();
                     break;
+                case 6:
+                    gerenciarCategorias();
                 case 0:
                     System.out.println("Voltando ao menu principal...");
                     break;
@@ -252,6 +254,92 @@ public class EstoqueController {
             }
         } while (opcao != 0);
     }
+
+    private void gerenciarCategorias() {
+        int opcao;
+        do {
+            opcao = produtoView.exibirMenuCategorias();
+            switch (opcao) {
+                case 1:
+                    listarCategorias();
+                    break;
+                case 2:
+                    cadastrarCategoria();
+                    break;
+                case 3:
+                    editarCategoria();
+                    break;
+                case 4:
+                    removerCategoria();
+                    break;
+                case 0:
+                    System.out.println("Voltando ao menu de produtos...");
+                    break;
+                    default:
+                        System.out.println("Opção Invalida!");
+            }
+        }while (opcao != 0);
+    }
+
+    private void listarCategorias() {
+        List<Categoria> categorias = EstoqueRepository.listarCategorias();
+        produtoView.exibirListaCategorias(categorias);
+    }
+
+    private void cadastrarCategoria() {
+        Categoria novaCategoria = produtoView.solicitarDadosCategoria();
+        EstoqueRepository.adicionarCategoria(novaCategoria);
+        System.out.println("\nCategoria cadastrada com sucesso!");
+    }
+
+    private void editarCategoria() {
+        Long id = produtoView.solicitarIdCategoria();
+        if (id == null) {
+            System.out.println("\nID inválido.");
+            return;
+        }
+
+        Categoria categoria = EstoqueRepository.buscarCategoriaPorId(id);
+        if (categoria == null) {
+            System.out.println("\nCategoria não encontrada.");
+            return;
+        }
+
+        Categoria categoriaAtualizada = produtoView.solicitarDadosCategoria();
+        categoriaAtualizada.setId(id);
+
+        EstoqueRepository.atualizarCategoria(categoriaAtualizada);
+        System.out.println("\nCategoria atualizada com sucesso!");
+    }
+
+    private void removerCategoria() {
+        Long id = produtoView.solicitarIdCategoria();
+        if (id == null) {
+            System.out.println("\nID inválido.");
+            return;
+        }
+
+        Categoria categoria = EstoqueRepository.buscarCategoriaPorId(id);
+        if (categoria == null) {
+            System.out.println("\nCategoria não encontrada.");
+            return;
+        }
+
+        if (produtoView.confirmarExclusao("categoria")) {
+            // Verificar se há produtos associados a esta categoria
+            List<Produto> produtosAssociados = EstoqueRepository.buscarProdutosPorCategoria(id);
+            if (produtosAssociados != null && !produtosAssociados.isEmpty()) {
+                System.out.println("\nEsta categoria possui produtos associados. Não é possível removê-la.");
+                return;
+            }
+
+            EstoqueRepository.removerCategoria(id);
+            System.out.println("\nCategoria removida com sucesso!");
+        } else {
+            System.out.println("\nOperação cancelada.");
+        }
+    }
+
 
     // Listar todos os produtos
     private void listarProdutos() {
@@ -269,15 +357,14 @@ public class EstoqueController {
     // Cadastrar novo produto
     private void cadastrarProduto() {
         List<Categoria> categorias = EstoqueRepository.listarCategorias();
-        if (categorias.isEmpty()) {
-            System.out.println("\nNão há categorias cadastradas. Cadastre uma categoria primeiro.");
-            return;
-        }
-
         Produto novoProduto = produtoView.solicitarDadosProduto(categorias);
-        EstoqueRepository.adicionarProduto(novoProduto);
-        System.out.println("\nProduto cadastrado com sucesso!");
+
+        if (novoProduto != null) {
+            EstoqueRepository.adicionarProduto(novoProduto);
+            System.out.println("\nProduto cadastrado com sucesso!");
+        }
     }
+
 
     // Editar produto existente
     private void editarProduto() {
@@ -316,7 +403,7 @@ public class EstoqueController {
 
         produtoView.exibirDetalhesProduto(produto);
 
-        if (produtoView.confirmarExclusao()) {
+        if (produtoView.confirmarExclusao("produto")) {
             boolean sucesso = EstoqueRepository.removerProduto(produto.getId());
             if (sucesso) {
                 System.out.println("\nProduto removido com sucesso!");
@@ -327,6 +414,7 @@ public class EstoqueController {
             System.out.println("\nOperação cancelada.");
         }
     }
+
 
     public void menuRelatorios() {
         boolean voltarMenu = false;
