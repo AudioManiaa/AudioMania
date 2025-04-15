@@ -57,17 +57,48 @@ public class ProdutoView {
 
     // Exibir lista de produtos
     public void exibirListaProdutos(List<Produto> produtos) {
-        // Método mantido como estava...
+        if (produtos == null || produtos.isEmpty()) {
+            System.out.println("\nNenhum produto encontrado.");
+            return;
+        }
+
+        System.out.println("\n===== LISTA DE PRODUTOS =====");
+        System.out.printf("%-10s | %-30s | %-20s | %-15s%n", "CÓDIGO", "NOME", "CATEGORIA", "PREÇO VENDA");
+        System.out.println("-------------------------------------------------------------------------");
+
+        for (Produto produto : produtos) {
+            System.out.printf("%-10s | %-30s | %-20s | %s%n",
+                    produto.getCodigo(),
+                    produto.getNome(),
+                    produto.getCategoria() != null ? produto.getCategoria().getNome() : "Sem categoria",
+                    currencyFormatter.format(produto.getPrecoVenda()));
+        }
     }
+
 
     // Exibir detalhes de um produto
     public void exibirDetalhesProduto(Produto produto) {
-        // Método mantido como estava...
+        if (produto == null) {
+            System.out.println("\nProduto não encontrado.");
+            return;
+        }
+
+        System.out.println("\n===== DETALHES DO PRODUTO =====");
+        System.out.println("ID: " + produto.getId());
+        System.out.println("Código: " + produto.getCodigo());
+        System.out.println("Nome: " + produto.getNome());
+        System.out.println("Descrição: " + produto.getDescricao());
+        System.out.println("Marca: " + produto.getFabricante());
+        System.out.println("Categoria: " + (produto.getCategoria() != null ? produto.getCategoria().getNome() : "Sem categoria"));
+        System.out.println("Preço de compra: " + currencyFormatter.format(produto.getPrecoCompra()));
+        System.out.println("Preço de venda: " + currencyFormatter.format(produto.getPrecoVenda()));
     }
+
 
     // Solicitar código do produto
     public String solicitarCodigoProduto() {
-        // Método mantido como estava...
+        System.out.print("\nDigite o código do produto: ");
+        return scanner.nextLine().trim();
     }
 
     // Método para cadastrar um novo produto

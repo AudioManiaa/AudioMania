@@ -156,6 +156,21 @@ public class EstoqueRepository {
         return false;
     }
 
+    public static boolean atualizarCategoria(Categoria categoria) {
+        for (int i = 0; i < categorias.size(); i++) {
+            if (categorias.get(i).getId().equals(categoria.getId())) {
+                categorias.set(i, categoria);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean removerCategoria(Long id) {
+        return categorias.removeIf(categoria -> categoria.getId().equals(id));
+    }
+
+
     public static BigDecimal calcularValorTotalEstoque() {
         return itensEstoque.stream()
                 .map(ItemEstoque::getValorTotalEstoque)
