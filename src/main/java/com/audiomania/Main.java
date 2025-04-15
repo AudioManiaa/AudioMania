@@ -38,7 +38,8 @@ public class Main {
             
             opcoes.add(new OpcaoMenu("Clientes", scanner -> {
                 System.out.println("Funcionalidade de Clientes");
-                // Implementar lógica de clientes
+
+                //aplicar ClientesView
             }));
             
             opcoes.add(new OpcaoMenu("Historico", scanner -> {
@@ -46,9 +47,10 @@ public class Main {
                 // Implementar lógica de histórico
             }));
 
-            opcoes.add(new OpcaoMenu("Registrar novo Usuario", scanner -> {
-                System.out.println("Funcionalidade de Registro de Usuário");
-                // Implementar lógica de registro
+            opcoes.add(new OpcaoMenu("Gerenciar Funcionarios", scanner -> {
+                System.out.println("Funcionalidade de Registro de novo Funcionario");
+                //aplicar funcionalidade, usar @Funcionario e @SistemaController
+
             }));
             
             // Exibindo o menu

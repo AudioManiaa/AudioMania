@@ -1,7 +1,0 @@
-com/audiomania/controller/SistemaController.class
-com/audiomania/model/Usuario.class
-com/audiomania/service/UsuarioService.class
-com/audiomania/service/MenuService.class
-com/audiomania/view/LoginView.class
-com/audiomania/service/MenuService$OpcaoMenu.class
-com/audiomania/Main.class
