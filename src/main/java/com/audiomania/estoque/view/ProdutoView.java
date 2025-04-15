@@ -35,4 +35,27 @@ public class ProdutoView {
             return -1;
         }
     }
+    // Exibir lista de produtos
+    public void exibirListaProdutos(List<Produto> produtos) {
+        if (produtos == null || produtos.isEmpty()) {
+            System.out.println("\nNenhum produto encontrado.");
+            return;
+        }
+
+        System.out.println("\n===== LISTA DE PRODUTOS =====");
+        System.out.printf("%-5s | %-10s | %-30s | %-15s | %-15s | %-15s%n",
+                "ID", "CÓDIGO", "NOME", "CATEGORIA", "MARCA", "PREÇO");
+        System.out.println("-----------------------------------------------------------------------------------------");
+
+        for (Produto produto : produtos) {
+            System.out.printf("%-5d | %-10s | %-30s | %-15s | %-15s | %-15s%n",
+                    produto.getId(),
+                    produto.getCodigo(),
+                    produto.getNome(),
+                    produto.getCategoria().getNome(),
+                    produto.getFabricante(),
+                    currencyFormatter.format(produto.getPrecoVenda()));
+        }
+    }
+
 
