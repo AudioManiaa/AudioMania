@@ -1,15 +1,8 @@
 package com.audiomania.view;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.audiomania.controller.SistemaController;
-import com.audiomania.model.Usuario;
-import com.audiomania.service.MenuService;
-import com.audiomania.service.MenuService.OpcaoMenu;
+import com.audiomania.entities.FuncionarioEntity;
 
 public class LoginView {
     private final Scanner scanner;
@@ -22,86 +15,84 @@ public class LoginView {
 
     /**
      * Inicia a aplicação de login
-     * @return Usuário autenticado ou null em caso de saída
+     * @return Funcionário autenticado ou null em caso de saída
      */
-    public Usuario iniciarLogin() {
-        AtomicBoolean sair = new AtomicBoolean(false);
-        AtomicReference<Usuario> usuarioLogadoRef = new AtomicReference<>(null);
-        
-        while (!sair.get() && usuarioLogadoRef.get() == null) {
-            // Criando as opções do menu de login
-            List<OpcaoMenu> opcoesLogin = new ArrayList<>();
-            
-            // Opção de login
-            opcoesLogin.add(new OpcaoMenu("Login", s -> {
-                Usuario usuario = fazerLogin();
-                if (usuario != null) {
-                    usuarioLogadoRef.set(usuario);
-                }
-            }));
-            
-            // Opção de cadastro
-            opcoesLogin.add(new OpcaoMenu("Registrar novo usuário", s -> {
-                cadastrarNovoUsuario();
-            }));
-            
-            // Exibindo o menu usando o MenuService
-            MenuService.criarMenu("========= SISTEMA AUDIO MANIA =========", opcoesLogin);
+    public FuncionarioEntity iniciarLogin() {
+        System.out.println("\n===== SISTEMA AUDIO MANIA =====\n");
+        System.out.println("1. Login");
+        System.out.println("2. Registrar novo funcionário");
+        System.out.println("0. Sair");
+        System.out.print("\nEscolha uma opção: ");
+
+        int opcao = -1;
+        try {
+            opcao = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Opção inválida!");
+            return null;
         }
-        
-        return usuarioLogadoRef.get();
+
+        switch (opcao) {
+            case 1:
+                return fazerLogin();
+            case 2:
+                cadastrarNovoFuncionario();
+                return null;
+            case 0:
+                return null;
+            default:
+                System.out.println("Opção inválida!");
+                return null;
+        }
     }
 
-    private Usuario fazerLogin() {
-        System.out.println("\n--- Login ---");
-        System.out.print("Login: ");
-        String login = scanner.nextLine();
+    private FuncionarioEntity fazerLogin() {
+        System.out.println("\n--- Login de Funcionário ---");
+        System.out.print("CPF: ");
+        String cpf = scanner.nextLine();
+
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
 
-        Usuario usuario = controller.realizarLogin(login, senha);
+        FuncionarioEntity funcionario = controller.realizarLogin(cpf, senha);
 
-        if (usuario != null) {
-            System.out.println("Login realizado com sucesso!");
-            return usuario;
+        if (funcionario != null) {
+            System.out.println("\nLogin realizado com sucesso!");
+            return funcionario;
         } else {
-            System.out.println("Login ou senha incorretos!");
+            System.out.println("\nCPF ou senha incorretos!");
             return null;
         }
     }
 
-    private void cadastrarNovoUsuario() {
-        System.out.println("\n--- Cadastro de Novo Usuário ---");
-        System.out.print("Login: ");
-        String login = scanner.nextLine();
+    private void cadastrarNovoFuncionario() {
+        System.out.println("\n--- Cadastro de Novo Funcionário ---");
+
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("CPF: ");
+        String cpf = scanner.nextLine();
+
+        System.out.print("Cargo: ");
+        String cargo = scanner.nextLine();
+
+        System.out.print("Telefone: ");
+        String telefone = scanner.nextLine();
+
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
-        System.out.print("Nível de Acesso (1-Básico, 2-Intermediário, 3-Admin): ");
 
-        int nivelAcesso;
-        try {
-            nivelAcesso = Integer.parseInt(scanner.nextLine());
-            if (nivelAcesso < 1 || nivelAcesso > 3) {
-                System.out.println("Nível de acesso inválido!");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Nível de acesso inválido!");
-            return;
-        }
-
-        boolean sucesso = controller.cadastrarUsuario(login, senha, nivelAcesso);
+        boolean sucesso = controller.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
 
         if (sucesso) {
-            System.out.println("Usuário cadastrado com sucesso!");
+            System.out.println("\nFuncionário cadastrado com sucesso!");
         } else {
-            System.out.println("Erro: Login já existe!");
+            System.out.println("\nErro ao cadastrar funcionário!");
         }
     }
 
-    /**
-     * Fecha o scanner pra acessar o menu
-     */
+
     public void fechar() {
         scanner.close();
     }

@@ -20,7 +20,6 @@ public class Cliente {
         this.endereco = endereco;
     }
 
-    // Getters
     public String getNome() {
         return nome;
     }
@@ -37,7 +36,6 @@ public class Cliente {
         return endereco;
     }
 
-    // Setters, se quiser editar depois
     public void setNome(String nome) {
         this.nome = nome;
     }
