@@ -2,6 +2,7 @@ package com.audiomania.controller;
 
 import com.audiomania.entities.FuncionarioEntity;
 import com.audiomania.service.FuncionarioService;
+import java.util.List;
 
 public class SistemaController {
 
@@ -27,5 +28,36 @@ public class SistemaController {
     public boolean cadastrarFuncionario(String nome, String cpf, String cargo,
                                         String telefone, String senha) {
         return FuncionarioService.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
+    }
+
+    /**
+     * Lista todos os funcionários
+     * @return Lista de funcionários
+     */
+    public List<FuncionarioEntity> listarFuncionarios() {
+        return FuncionarioService.listarTodos();
+    }
+
+    /**
+     * Atualiza os dados de um funcionário
+     * @param id ID do funcionário
+     * @param nome Novo nome
+     * @param cargo Novo cargo
+     * @param telefone Novo telefone
+     * @param senha Nova senha (opcional)
+     * @return true se atualizado com sucesso, false caso contrário
+     */
+    public boolean atualizarFuncionario(Integer id, String nome, String cargo,
+                                        String telefone, String senha) {
+        return FuncionarioService.atualizarFuncionario(id, nome, cargo, telefone, senha);
+    }
+
+    /**
+     * Exclui um funcionário pelo ID
+     * @param id ID do funcionário
+     * @return true se excluído com sucesso, false caso contrário
+     */
+    public boolean excluirFuncionario(Integer id) {
+        return FuncionarioService.excluirFuncionario(id);
     }
 }

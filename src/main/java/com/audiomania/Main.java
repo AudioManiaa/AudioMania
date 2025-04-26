@@ -7,12 +7,13 @@ import com.audiomania.entities.FuncionarioEntity;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
+import com.audiomania.view.FuncionarioView;
 import com.audiomania.view.LoginView;
 
 public class Main {
     public static void main(String[] args) {
-        LoginView view = new LoginView();
-        FuncionarioEntity funcionarioLogado = view.iniciarLogin();
+        LoginView loginView = new LoginView();
+        FuncionarioEntity funcionarioLogado = loginView.iniciarLogin();
 
         if (funcionarioLogado != null) {
             List<OpcaoMenu> opcoes = new ArrayList<>();
@@ -22,6 +23,12 @@ public class Main {
                 System.out.println("CPF: " + funcionarioLogado.getCpf());
                 System.out.println("Cargo: " + funcionarioLogado.getCargo());
                 System.out.println("Telefone: " + funcionarioLogado.getTelefone());
+            }));
+
+            // Nova opção para gerenciar funcionários com FuncionarioView
+            opcoes.add(new OpcaoMenu("Gerenciar Funcionários", scanner -> {
+                FuncionarioView funcionarioView = new FuncionarioView();
+                funcionarioView.iniciarGerenciamento();
             }));
 
             opcoes.add(new OpcaoMenu("Estoque", scanner -> {
@@ -47,7 +54,7 @@ public class Main {
             MenuService.criarMenu("Menu Principal", opcoes);
         }
 
-        view.fechar();
+        loginView.fechar();
         // Fechar recursos do sistema
         FuncionarioService.fecharRecursos();
     }

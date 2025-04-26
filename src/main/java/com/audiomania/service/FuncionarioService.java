@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.audiomania.entities.FuncionarioEntity;
 
@@ -60,6 +62,44 @@ public class FuncionarioService {
         }
     }
 
+    public static List<FuncionarioEntity> listarTodos() {
+        List<FuncionarioEntity> funcionarios = new ArrayList<>();
+
+        try {
+            Connection conn = getConnection();
+
+            String sql = "SELECT Id_Funcionario, Nome, CPF, Cargo, Telefone, Data_Admissao FROM FUNCIONARIO ORDER BY Nome";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                FuncionarioEntity funcionario = new FuncionarioEntity();
+                funcionario.setId(rs.getInt("Id_Funcionario"));
+                funcionario.setNome(rs.getString("Nome"));
+                funcionario.setCpf(rs.getString("CPF"));
+                funcionario.setCargo(rs.getString("Cargo"));
+                funcionario.setTelefone(rs.getString("Telefone"));
+
+                java.sql.Date dataSQL = rs.getDate("Data_Admissao");
+                if (dataSQL != null) {
+                    funcionario.setDataAdmissao(dataSQL.toLocalDate());
+                }
+
+                funcionarios.add(funcionario);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            System.out.println("Erro ao listar funcionários: " + e.getMessage());
+        }
+
+        return funcionarios;
+    }
+
     public static boolean cadastrarFuncionario(String nome, String cpf, String cargo,
                                                String telefone, String senha) {
         try {
@@ -98,7 +138,78 @@ public class FuncionarioService {
         }
     }
 
-    public static void fecharRecursos() {
+    public static boolean atualizarFuncionario(Integer id, String nome, String cargo,
+                                               String telefone, String senha) {
+        try {
+            Connection conn = getConnection();
 
+            // Verificar se funcionário existe
+            String checkSql = "SELECT COUNT(*) FROM FUNCIONARIO WHERE Id_Funcionario = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setInt(1, id);
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next() && rs.getInt(1) == 0) {
+                rs.close();
+                checkStmt.close();
+                conn.close();
+                return false; // Funcionário não existe
+            }
+
+            rs.close();
+            checkStmt.close();
+
+            String sql = "UPDATE FUNCIONARIO SET Nome = ?, Cargo = ?, Telefone = ?";
+            if (senha != null && !senha.isEmpty()) {
+                sql += ", Senha = ?";
+            }
+            sql += " WHERE Id_Funcionario = ?";
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, nome);
+            stmt.setString(2, cargo);
+            stmt.setString(3, telefone);
+
+            if (senha != null && !senha.isEmpty()) {
+                stmt.setString(4, senha);
+                stmt.setInt(5, id);
+            } else {
+                stmt.setInt(4, id);
+            }
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            stmt.close();
+            conn.close();
+
+            return linhasAfetadas > 0;
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar funcionário: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean excluirFuncionario(Integer id) {
+        try {
+            Connection conn = getConnection();
+
+            String sql = "DELETE FROM FUNCIONARIO WHERE Id_Funcionario = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, id);
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            stmt.close();
+            conn.close();
+
+            return linhasAfetadas > 0;
+        } catch (Exception e) {
+            System.out.println("Erro ao excluir funcionário: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static void fecharRecursos() {
+        // Método mantido para compatibilidade
     }
 }
