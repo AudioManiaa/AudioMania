@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class GerenciadorProdutos {
+public class ProdutoRepository {
     private static final String URL = "jdbc:postgresql://localhost:5432/postgres";
     private static final String USUARIO = "postgres";
     private static final String SENHA = "Ee2310";
@@ -256,7 +256,7 @@ public class GerenciadorProdutos {
                     break;
 
                 case 0:
-                    System.out.println("Saindo do sistema...");
+                    System.out.println("Voltando ao menu principal.");
                     scanner.close();
                     return;
 
