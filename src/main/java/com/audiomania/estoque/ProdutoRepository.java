@@ -156,7 +156,7 @@ public class ProdutoRepository {
             System.out.print("Escolha uma opção: ");
 
             int opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer
+            scanner.nextLine();
 
             switch (opcao) {
                 case 1:
@@ -168,7 +168,7 @@ public class ProdutoRepository {
                     BigDecimal preco = new BigDecimal(scanner.nextLine());
                     System.out.print("Quantidade em Estoque: ");
                     int qtdEstoque = scanner.nextInt();
-                    scanner.nextLine(); // Limpar o buffer
+                    scanner.nextLine();
                     System.out.print("Categoria: ");
                     String categoria = scanner.nextLine();
                     System.out.print("Marca: ");
@@ -203,7 +203,7 @@ public class ProdutoRepository {
                 case 4:
                     System.out.print("ID do Produto a atualizar: ");
                     int idAtualizar = scanner.nextInt();
-                    scanner.nextLine(); // Limpar o buffer
+                    scanner.nextLine();
 
                     Produto produtoAtualizar = this.buscarProdutoPorId(idAtualizar);
                     if (produtoAtualizar != null) {
