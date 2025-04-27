@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.audiomania.entities.FuncionarioEntity;
+import com.audiomania.estoque.ProdutoRepository;
+import com.audiomania.repository.VendaRepository;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
@@ -31,14 +33,16 @@ public class Main {
                 funcionarioView.iniciarGerenciamento();
             }));
 
-            opcoes.add(new OpcaoMenu("Estoque", scanner -> {
-                System.out.println("Funcionalidade de Estoque");
-                //Implementar lógica de estoque
+            opcoes.add(new OpcaoMenu("Produtos", scanner -> {
+                System.out.println("");
+                ProdutoRepository produtoRepository = new ProdutoRepository();
+                produtoRepository.exibirMenu();
             }));
 
-            opcoes.add(new OpcaoMenu("Orçamentos de Serviços", scanner -> {
+            opcoes.add(new OpcaoMenu("Vendas", scanner -> {
                 System.out.println("Funcionalidade de Orçamentos");
-                //Implementar lógica de orçamentos
+                VendaRepository vendaRepository = new VendaRepository();
+                vendaRepository.listarTodas();
             }));
 
             opcoes.add(new OpcaoMenu("Clientes", scanner -> {

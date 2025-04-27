@@ -6,11 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-      </profile>
-      <profile name="Annotation profile for testeBanco" enabled="true">
-        <sourceOutputDir name="../Audiomaniaa/target/generated-sources/annotations" />
-        <sourceTestOutputDir name="../Audiomaniaa/target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
         <module name="testeBanco" />
       </profile>
     </annotationProcessing>
