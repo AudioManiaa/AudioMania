@@ -6,7 +6,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import java.util.List;
 
-public class VendaRepository {
+public class VendaRepositoryrr {
 
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("meuPU");
 
