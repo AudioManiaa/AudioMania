@@ -17,7 +17,7 @@ public class VendaController {
             System.out.println("\n--- Sistema de Vendas ---");
             System.out.println("1 - Cadastrar Venda");
             System.out.println("2 - Listar Vendas");
-            System.out.println("0 - Sair");
+            System.out.println("0 - Sair 8===D");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
             scanner.nextLine(); // consumir o enter
