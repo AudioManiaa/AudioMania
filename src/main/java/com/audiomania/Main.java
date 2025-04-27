@@ -3,8 +3,10 @@ package com.audiomania;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.audiomania.controller.Historico;
 import com.audiomania.entities.FuncionarioEntity;
 import com.audiomania.estoque.ProdutoRepository;
+import com.audiomania.model.Cliente;
 import com.audiomania.repository.VendaRepository;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
@@ -45,14 +47,10 @@ public class Main {
                 vendaRepository.listarTodas();
             }));
 
-            opcoes.add(new OpcaoMenu("Clientes", scanner -> {
-                System.out.println("Funcionalidade de Clientes");
-                //Implementar lógica de clientes
-            }));
-
             opcoes.add(new OpcaoMenu("Histórico", scanner -> {
                 System.out.println("Funcionalidade de Histórico");
-                //Implementar lógica de histórico
+                Historico historico = new Historico();
+                historico.menuHistorico();
             }));
 
             MenuService.criarMenu("Menu Principal", opcoes);
