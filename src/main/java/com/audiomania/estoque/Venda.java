@@ -86,5 +86,5 @@ public class Venda {
 
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
-    }
+    };
 }
