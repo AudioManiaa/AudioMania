@@ -59,6 +59,7 @@ public class Venda {
         return idCliente;
     }
 
+
     public void setIdCliente(int idCliente) {
         this.idCliente = idCliente;
     }

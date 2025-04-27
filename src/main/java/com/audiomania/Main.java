@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.audiomania.entities.FuncionarioEntity;
 import com.audiomania.estoque.ProdutoRepository;
-import com.audiomania.repository.VendaRepositoryrr;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
