@@ -24,7 +24,7 @@ public class VendaRepository {
     public List<VendaEntity> listarTodas() {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("FROM Venda", VendaEntity.class).getResultList();
+            return em.createQuery("FROM VendaEntity", VendaEntity.class).getResultList();
         } finally {
             em.close();
         }
