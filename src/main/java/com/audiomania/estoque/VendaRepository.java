@@ -130,7 +130,7 @@ public class VendaRepository {
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println("Erro ao atualizar vendaa: " + e.getMessage());
+            System.out.println("Erro ao atualizar venda: " + e.getMessage());
             return false;
         }
     }
