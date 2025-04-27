@@ -9,6 +9,7 @@ import com.audiomania.repository.VendaRepository;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
+import com.audiomania.view.ClienteView;
 import com.audiomania.view.FuncionarioView;
 import com.audiomania.view.LoginView;
 
@@ -27,7 +28,6 @@ public class Main {
                 System.out.println("Telefone: " + funcionarioLogado.getTelefone());
             }));
 
-            // Nova opção para gerenciar funcionários com FuncionarioView
             opcoes.add(new OpcaoMenu("Gerenciar Funcionários", scanner -> {
                 FuncionarioView funcionarioView = new FuncionarioView();
                 funcionarioView.iniciarGerenciamento();
@@ -46,8 +46,8 @@ public class Main {
             }));
 
             opcoes.add(new OpcaoMenu("Clientes", scanner -> {
-                System.out.println("Funcionalidade de Clientes");
-                //Implementar lógica de clientes
+                ClienteView clienteView = new ClienteView();
+                clienteView.iniciarGerenciamento();
             }));
 
             opcoes.add(new OpcaoMenu("Histórico", scanner -> {
