@@ -3,6 +3,7 @@ package com.audiomania;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.audiomania.controller.Historico;
 import com.audiomania.entities.FuncionarioEntity;
 import com.audiomania.estoque.ProdutoRepository;
 import com.audiomania.service.FuncionarioService;
@@ -52,7 +53,8 @@ public class Main {
 
             opcoes.add(new OpcaoMenu("Histórico", scanner -> {
                 System.out.println("Funcionalidade de Histórico");
-                //Implementar lógica de histórico
+                Historico historico = new Historico();
+                historico.menuHistorico();
             }));
 
             MenuService.criarMenu("Menu Principal", opcoes);
