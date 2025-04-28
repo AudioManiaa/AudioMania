@@ -80,6 +80,103 @@ public class Historico {
         }
     }
 
+    public void exibirHistoricoClientes() {
+        if (historicoClientes.isEmpty()) {
+            System.out.println("Nenhum cliente no histórico.");
+            return;
+        }
+        System.out.println("\n--- Histórico de Clientes ---");
+        for (int i = 0; i < historicoClientes.size(); i++) {
+            System.out.print((i + 1) + ". ");
+            historicoClientes.get(i).exibirCliente();
+        }
+    }
+
+    public void exibirHistoricoFuncionarios() {
+        if (historicoFuncionarios.isEmpty()) {
+            System.out.println("Nenhum funcionário no histórico.");
+            return;
+        }
+        System.out.println("\n--- Histórico de Funcionários ---");
+        for (int i = 0; i < historicoFuncionarios.size(); i++) {
+            System.out.print((i + 1) + ". ");
+            historicoFuncionarios.get(i).exibirFuncionario();
+        }
+    }
+
+    public void exibirHistoricoCompras(Cliente cliente) {
+        if (cliente == null) {
+            System.out.println("Cliente inválido.");
+            return;
+        }
+
+        if (!historicoCompras.containsKey(cliente) || historicoCompras.get(cliente).isEmpty()) {
+            System.out.println("Nenhuma compra registrada para o cliente: " + cliente.getNome());
+            return;
+        }
+        System.out.println("\n--- Histórico de Compras do Cliente: " + cliente.getNome() + " ---");
+        List<String> compras = historicoCompras.get(cliente);
+        for (int i = 0; i < compras.size(); i++) {
+            System.out.println((i + 1) + ". " + compras.get(i));
+            System.out.println("------------------------");
+        }
+    }
+
+    public void adicionarCliente(Cliente cliente) {
+        if (cliente != null && !historicoClientes.contains(cliente)) {
+            historicoClientes.add(cliente);
+        }
+    }
+
+    public void adicionarFuncionario(Funcionario funcionario) {
+        if (funcionario != null && !historicoFuncionarios.contains(funcionario)) {
+            historicoFuncionarios.add(funcionario);
+        }
+    }
+
+    public void adicionarCompra(Cliente cliente, String detalhesCompra) {
+        if (cliente != null && detalhesCompra != null) {
+            if (!historicoCompras.containsKey(cliente)) {
+                historicoCompras.put(cliente, new ArrayList<>());
+            }
+            historicoCompras.get(cliente).add(detalhesCompra);
+        }
+    }
+
+    private Cliente selecionarCliente() {
+        if (historicoClientes.isEmpty()) {
+            System.out.println("Não há clientes cadastrados no histórico.");
+            return null;
+        }
+
+        System.out.println("\n--- Selecione um Cliente ---");
+        for (int i = 0; i < historicoClientes.size(); i++) {
+            Cliente c = historicoClientes.get(i);
+            System.out.println((i + 1) + ". " + c.getNome() + " (CPF: " + c.getCpf() + ")");
+        }
+
+        System.out.print("Digite o número do cliente (0 para cancelar): ");
+        try {
+            int escolha = scanner.nextInt();
+            scanner.nextLine(); // Limpar o buffer
+
+            if (escolha == 0) {
+                return null;
+            }
+
+            if (escolha < 1 || escolha > historicoClientes.size()) {
+                System.out.println("Opção inválida!");
+                return null;
+            }
+
+            return historicoClientes.get(escolha - 1);
+        } catch (Exception e) {
+            System.out.println("Entrada inválida. Por favor, digite um número.");
+            scanner.nextLine(); // Limpar o buffer em caso de erro
+            return null;
+        }
+    }
+
     public void menuHistorico() {
         while (true) {
             System.out.println("\n--- Menu de Histórico ---");
