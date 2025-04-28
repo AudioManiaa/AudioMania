@@ -6,14 +6,13 @@ import java.util.List;
 import com.audiomania.controller.Historico;
 import com.audiomania.entities.FuncionarioEntity;
 import com.audiomania.estoque.ProdutoRepository;
-import com.audiomania.model.Cliente;
-import com.audiomania.repository.VendaRepository;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
 import com.audiomania.view.ClienteView;
 import com.audiomania.view.FuncionarioView;
 import com.audiomania.view.LoginView;
+import com.audiomania.estoque.VendaRepository;
 
 public class Main {
     public static void main(String[] args) {
@@ -44,7 +43,7 @@ public class Main {
             opcoes.add(new OpcaoMenu("Vendas", scanner -> {
                 System.out.println("Funcionalidade de Orçamentos");
                 VendaRepository vendaRepository = new VendaRepository();
-                vendaRepository.listarTodas();
+                vendaRepository.exibirMenu();
             }));
 
             opcoes.add(new OpcaoMenu("Clientes", scanner -> {
