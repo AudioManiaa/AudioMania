@@ -3,61 +3,65 @@ package com.audiomania;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.audiomania.model.Usuario;
+import com.audiomania.controller.Historico;
+import com.audiomania.entities.FuncionarioEntity;
+import com.audiomania.repository.ProdutoRepository;
+import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
+import com.audiomania.view.ClienteView;
+import com.audiomania.view.FuncionarioView;
 import com.audiomania.view.LoginView;
+import com.audiomania.repository.VendaRepository;
 
 public class Main {
     public static void main(String[] args) {
-        LoginView view = new LoginView();
-        Usuario usuarioLogado = view.iniciarLogin();
+        LoginView loginView = new LoginView();
+        FuncionarioEntity funcionarioLogado = loginView.iniciarLogin();
 
-        if (usuarioLogado != null) {
-
-            //INICIOFUNMENU
-            // Criando a lista de opções do menu
+        if (funcionarioLogado != null) {
             List<OpcaoMenu> opcoes = new ArrayList<>();
-            
-            // Adicionando as opções do menu
 
-            opcoes.add(new OpcaoMenu("Usuario", scanner -> {
-                System.out.println("Usuário logado: " + usuarioLogado.getLogin());
-                System.out.println("Nível de acesso: " + usuarioLogado.getNivelAcesso());
+            opcoes.add(new OpcaoMenu("Funcionário", scanner -> {
+                System.out.println("Funcionário logado: " + funcionarioLogado.getNome());
+                System.out.println("CPF: " + funcionarioLogado.getCpf());
+                System.out.println("Cargo: " + funcionarioLogado.getCargo());
+                System.out.println("Telefone: " + funcionarioLogado.getTelefone());
             }));
-            
-            opcoes.add(new OpcaoMenu("Estoque", scanner -> {
-                System.out.println("Funcionalidade de Estoque");
-                // Implementar lógica de estoque
+
+            opcoes.add(new OpcaoMenu("Gerenciar Funcionários", scanner -> {
+                FuncionarioView funcionarioView = new FuncionarioView();
+                funcionarioView.iniciarGerenciamento();
             }));
-            
-            opcoes.add(new OpcaoMenu("Orçamentos de Serviços", scanner -> {
+
+            opcoes.add(new OpcaoMenu("Produtos", scanner -> {
+                System.out.println("");
+                ProdutoRepository produtoRepository = new ProdutoRepository();
+                produtoRepository.exibirMenu();
+            }));
+
+            opcoes.add(new OpcaoMenu("Vendas", scanner -> {
                 System.out.println("Funcionalidade de Orçamentos");
-                // Implementar lógica de orçamentos
+                VendaRepository vendaRepository = new VendaRepository();
+                vendaRepository.exibirMenu();
             }));
-            
+
             opcoes.add(new OpcaoMenu("Clientes", scanner -> {
-                System.out.println("Funcionalidade de Clientes");
-
-                //aplicar ClientesView
+                ClienteView clienteView = new ClienteView();
+                clienteView.iniciarGerenciamento();
             }));
-            
-            opcoes.add(new OpcaoMenu("Historico", scanner -> {
+
+            opcoes.add(new OpcaoMenu("Histórico", scanner -> {
                 System.out.println("Funcionalidade de Histórico");
-                // Implementar lógica de histórico
+                Historico historico = new Historico();
+                historico.menuHistorico();
             }));
 
-            opcoes.add(new OpcaoMenu("Gerenciar Funcionarios", scanner -> {
-                System.out.println("Funcionalidade de Registro de novo Funcionario");
-                //aplicar funcionalidade, usar @Funcionario e @SistemaController
-
-            }));
-            
-            // Exibindo o menu
             MenuService.criarMenu("Menu Principal", opcoes);
-            //FIMFUNMENU
         }
 
-        view.fechar();
+        loginView.fechar();
+        // Fechar recursos do sistema
+        FuncionarioService.fecharRecursos();
     }
 }
