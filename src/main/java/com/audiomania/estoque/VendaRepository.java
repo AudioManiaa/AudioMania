@@ -519,7 +519,7 @@ public class VendaRepository {
             try {
                 return Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.print("Entrada inválida. Digite um número inteiro: ");
+                System.out.print("Entrada inválida. Digite um numero inteiro: ");
             }
         }
     }
