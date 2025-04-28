@@ -1,2 +1,13 @@
 # windsurf rules
 .windsurfrules
+
+# Target
+/target
+.idea/uiDesigner.xml
+.idea/compiler.xml
+.idea/discord.xml
+.idea/compiler.xml
+.idea/compiler.xml
+.idea/vcs.xml
+.idea/workspace.xml
+target/classes/com/audiomania/estoque/ProdutoRepository.class
