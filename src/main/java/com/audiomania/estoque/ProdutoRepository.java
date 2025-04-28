@@ -144,8 +144,9 @@ public class ProdutoRepository {
 
     public void exibirMenu() {
         Scanner scanner = new Scanner(System.in);
+        boolean voltarMenu = false;
 
-        while (true) {
+        while (!voltarMenu) {
             System.out.println("\n=== GERENCIADOR DE PRODUTOS ===");
             System.out.println("1. Adicionar Produto");
             System.out.println("2. Buscar Produto por ID");
@@ -256,9 +257,8 @@ public class ProdutoRepository {
                     break;
 
                 case 0:
-                    System.out.println("Voltando ao menu principal.");
-                    scanner.close();
-                    return;
+                    voltarMenu = true;
+                    break;
 
                 default:
                     System.out.println("Opção inválida!");
