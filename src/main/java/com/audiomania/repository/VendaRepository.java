@@ -1,9 +1,11 @@
-package com.audiomania.estoque;
+package com.audiomania.repository;
+
+import com.audiomania.model.Produto;
+import com.audiomania.model.Venda;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;

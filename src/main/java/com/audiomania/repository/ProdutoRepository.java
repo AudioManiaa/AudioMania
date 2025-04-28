@@ -1,4 +1,6 @@
-package com.audiomania.estoque;
+package com.audiomania.repository;
+
+import com.audiomania.model.Produto;
 
 import java.math.BigDecimal;
 import java.sql.*;
