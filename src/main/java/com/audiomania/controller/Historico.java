@@ -179,30 +179,47 @@ public class Historico {
 
     public void menuHistorico() {
         while (true) {
-            System.out.println("\n--- Menu de Histórico ---");
+            System.out.println("\n======Menu de Histórico======");
             System.out.println("1. Exibir Histórico de Clientes");
             System.out.println("2. Exibir Histórico de Funcionários");
             System.out.println("3. Exibir Histórico de Compras de um Cliente");
             System.out.println("0. Sair");
+            System.out.println("Escolha uma opcao");
 
-            int opcao = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                int opcao = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (opcao) {
-                case 1:
-                    //exibirHistoricoClientes();
-                    break;
-                case 2:
-                    //exibirHistoricoFuncionarios();
-                    break;
-                case 3:
-                    //exibirHistoricoCompras(null);
-                    break;
-                case 0:
-                    return;
-                default:
-                    System.out.println("Opção inválida.");
+                switch (opcao) {
+                    case 1:
+                        exibirHistoricoClientes();
+                        break;
+                    case 2:
+                        exibirHistoricoFuncionarios();
+                        break;
+                    case 3:
+                        Cliente clienteSelecionado = selecionarCliente();
+                        if (clienteSelecionado != null) {
+                            exibirHistoricoCompras(clienteSelecionado);
+                        }
+                        break;
+                    case 0:
+                        // Fechando os repositórios
+                        clienteRepository.fechar();
+                        funcionarioRepository.fechar();
+                        System.out.println("Saindo do menu de histórico...");
+                        return;
+                    default:
+                        System.out.println("Opção inválida.");
+                }
+            }catch (Exception e) {
+                System.out.println("Entrada inválida. Por favor, digite um número.");
+                scanner.nextLine(); // Limpar o buffer em caso de erro
             }
+
+            // Pausa para melhor visualização
+            System.out.println("\nPressione ENTER para continuar...");
+            scanner.nextLine();
         }
     }
 }
