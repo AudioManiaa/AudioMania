@@ -1,10 +1,6 @@
-package com.audiomania.estoque;
+package com.audiomania.model;
 
 import java.math.BigDecimal;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 // Classe de modelo para representar um Produto
 public class Produto {

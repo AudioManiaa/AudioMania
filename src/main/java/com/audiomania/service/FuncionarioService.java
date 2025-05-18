@@ -16,7 +16,7 @@ public class FuncionarioService {
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/postgres",
                 "postgres",
-                "Ee2310");
+                "Wellsny321@");
     }
 
     public static FuncionarioEntity autenticar(String cpf, String senha) {

@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.audiomania.controller.Historico;
+import com.audiomania.controller.VendaController;
 import com.audiomania.entities.FuncionarioEntity;
-import com.audiomania.estoque.ProdutoRepository;
 import com.audiomania.service.FuncionarioService;
 import com.audiomania.service.MenuService;
 import com.audiomania.service.MenuService.OpcaoMenu;
 import com.audiomania.view.ClienteView;
 import com.audiomania.view.FuncionarioView;
 import com.audiomania.view.LoginView;
-import com.audiomania.estoque.VendaRepository;
+import com.audiomania.view.ProdutoView;
+import com.audiomania.view.VendaView;
+import com.audiomania.service.ClienteService;
+import com.audiomania.service.FuncionarioService;
+import com.audiomania.service.ProdutoService;
+import com.audiomania.service.VendaService;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,15 +40,14 @@ public class Main {
             }));
 
             opcoes.add(new OpcaoMenu("Produtos", scanner -> {
-                System.out.println("");
-                ProdutoRepository produtoRepository = new ProdutoRepository();
-                produtoRepository.exibirMenu();
+                ProdutoView produtoView = new ProdutoView();
+                produtoView.iniciarGerenciamento();
             }));
 
             opcoes.add(new OpcaoMenu("Vendas", scanner -> {
-                System.out.println("Funcionalidade de Orçamentos");
-                VendaRepository vendaRepository = new VendaRepository();
-                vendaRepository.exibirMenu();
+                System.out.println("Gerenciamento de Vendas");
+                VendaView vendaView = new VendaView(funcionarioLogado);
+                vendaView.iniciarGerenciamento();
             }));
 
             opcoes.add(new OpcaoMenu("Clientes", scanner -> {
@@ -62,6 +66,10 @@ public class Main {
 
         loginView.fechar();
         // Fechar recursos do sistema
+        // Fechar recursos do sistema
         FuncionarioService.fecharRecursos();
+        ClienteService.fecharRecursos();
+        ProdutoService.fecharRecursos();
+        VendaService.fecharRecursos();
     }
 }
