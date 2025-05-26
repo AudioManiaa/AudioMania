@@ -1,33 +1,36 @@
-package com.audiomania.controller;
+package com.audiomania.view;
 
-import com.audiomania.entities.ClienteEntity;
-import com.audiomania.entities.FuncionarioEntity;
-import com.audiomania.model.Cliente;
-import com.audiomania.model.Funcionario;
-import com.audiomania.repository.ClienteRepository;
-import com.audiomania.repository.FuncionarioRepository;
+import com.audiomania.model.entities.ClienteEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.entities.VendaEntity;
+import com.audiomania.model.repository.ClienteRepository;
+import com.audiomania.model.repository.FuncionarioRepository;
+import com.audiomania.model.repository.VendaRepository;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Historico {
+public class HistoricoView {
 
-    private List<Cliente> historicoClientes = new ArrayList<>();
-    private List<Funcionario> historicoFuncionarios = new ArrayList<>();
-    private Map<Cliente, List<String>> historicoCompras = new HashMap<>();
+    private List<ClienteEntity> historicoClientes = new ArrayList<>();
+    private List<FuncionarioEntity> historicoFuncionarios = new ArrayList<>();
+    private Map<ClienteEntity, List<VendaEntity>> historicoCompras = new HashMap<>();
     private Scanner scanner = new Scanner(System.in);
 
     // Repositórios para acesso ao banco de dados
     private ClienteRepository clienteRepository;
     private FuncionarioRepository funcionarioRepository;
+    private VendaRepository vendaRepository;
 
-    public Historico() {
+    public HistoricoView() {  // CORREÇÃO: Alterado de Historico para HistoricoView
         // Inicializa os repositórios
         this.clienteRepository = new ClienteRepository();
         this.funcionarioRepository = new FuncionarioRepository();
+        this.vendaRepository = new VendaRepository();
 
         carregarDadosDoBanco();
     }
@@ -40,38 +43,36 @@ public class Historico {
             historicoCompras.clear();
 
             // Carregar clientes do banco de dados
-            List<ClienteEntity> clientesEntity = clienteRepository.listarTodos();
-            if (clientesEntity != null && !clientesEntity.isEmpty()) {
-                for (ClienteEntity entity : clientesEntity) {
-                    Cliente cliente = new Cliente(
-                            entity.getNome(),
-                            entity.getCpf(),
-                            entity.getTelefone(),
-                            entity.getEndereco()
-                    );
-                    historicoClientes.add(cliente);
-                }
+            List<ClienteEntity> clientes = clienteRepository.listarTodos();
+            if (clientes != null && !clientes.isEmpty()) {
+                historicoClientes.addAll(clientes);
                 System.out.println("Clientes carregados do banco de dados: " + historicoClientes.size());
             } else {
                 System.out.println("Nenhum cliente encontrado no banco de dados.");
             }
 
             // Carregar funcionários do banco de dados
-            List<FuncionarioEntity> funcionariosEntity = funcionarioRepository.listarTodos();
-            if (funcionariosEntity != null && !funcionariosEntity.isEmpty()) {
-                for (FuncionarioEntity entity : funcionariosEntity) {
-                    Funcionario funcionario = new Funcionario(
-                            entity.getNome(),
-                            entity.getCpf(),
-                            entity.getTelefone(),
-                            "",
-                            entity.getSenha()
-                    );
-                    historicoFuncionarios.add(funcionario);
-                }
+            List<FuncionarioEntity> funcionarios = funcionarioRepository.listarTodos();
+            if (funcionarios != null && !funcionarios.isEmpty()) {
+                historicoFuncionarios.addAll(funcionarios);
                 System.out.println("Funcionários carregados do banco de dados: " + historicoFuncionarios.size());
             } else {
                 System.out.println("Nenhum funcionário encontrado no banco de dados.");
+            }
+
+            // Carregar vendas e organizá-las por cliente
+            List<VendaEntity> vendas = vendaRepository.listarTodos();
+            if (vendas != null && !vendas.isEmpty()) {
+                for (VendaEntity venda : vendas) {
+                    ClienteEntity cliente = venda.getCliente();
+                    if (!historicoCompras.containsKey(cliente)) {
+                        historicoCompras.put(cliente, new ArrayList<>());
+                    }
+                    historicoCompras.get(cliente).add(venda);
+                }
+                System.out.println("Vendas carregadas e organizadas por cliente.");
+            } else {
+                System.out.println("Nenhuma venda encontrada no banco de dados.");
             }
 
         } catch (Exception e) {
@@ -87,8 +88,12 @@ public class Historico {
         }
         System.out.println("\n--- Histórico de Clientes ---");
         for (int i = 0; i < historicoClientes.size(); i++) {
-            System.out.print((i + 1) + ". ");
-            historicoClientes.get(i).exibirCliente();
+            ClienteEntity cliente = historicoClientes.get(i);
+            System.out.println((i + 1) + ". Nome: " + cliente.getNome());
+            System.out.println("   CPF: " + cliente.getCpf());
+            System.out.println("   Telefone: " + cliente.getTelefone());
+            System.out.println("   Endereço: " + cliente.getEndereco());
+            System.out.println("------------------------");
         }
     }
 
@@ -99,12 +104,16 @@ public class Historico {
         }
         System.out.println("\n--- Histórico de Funcionários ---");
         for (int i = 0; i < historicoFuncionarios.size(); i++) {
-            System.out.print((i + 1) + ". ");
-            historicoFuncionarios.get(i).exibirFuncionario();
+            FuncionarioEntity funcionario = historicoFuncionarios.get(i);
+            System.out.println((i + 1) + ". Nome: " + funcionario.getNome());
+            System.out.println("   CPF: " + funcionario.getCpf());
+            System.out.println("   Telefone: " + funcionario.getTelefone());
+            System.out.println("   Cargo: " + funcionario.getCargo());
+            System.out.println("------------------------");
         }
     }
 
-    public void exibirHistoricoCompras(Cliente cliente) {
+    public void exibirHistoricoCompras(ClienteEntity cliente) {
         if (cliente == null) {
             System.out.println("Cliente inválido.");
             return;
@@ -114,36 +123,24 @@ public class Historico {
             System.out.println("Nenhuma compra registrada para o cliente: " + cliente.getNome());
             return;
         }
+
         System.out.println("\n--- Histórico de Compras do Cliente: " + cliente.getNome() + " ---");
-        List<String> compras = historicoCompras.get(cliente);
+        List<VendaEntity> compras = historicoCompras.get(cliente);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         for (int i = 0; i < compras.size(); i++) {
-            System.out.println((i + 1) + ". " + compras.get(i));
+            VendaEntity venda = compras.get(i);
+            System.out.println((i + 1) + ". Data: " + venda.getData().format(formatter));
+            System.out.println("   Produto: " + venda.getProduto().getNome());
+            System.out.println("   Quantidade: " + venda.getQuantidade());
+            System.out.println("   Valor Total: R$ " + venda.getValorTotal());
+            System.out.println("   Forma de Pagamento: " + venda.getFormaPagamento());
+            System.out.println("   Atendido por: " + venda.getFuncionario().getNome());
             System.out.println("------------------------");
         }
     }
 
-    public void adicionarCliente(Cliente cliente) {
-        if (cliente != null && !historicoClientes.contains(cliente)) {
-            historicoClientes.add(cliente);
-        }
-    }
-
-    public void adicionarFuncionario(Funcionario funcionario) {
-        if (funcionario != null && !historicoFuncionarios.contains(funcionario)) {
-            historicoFuncionarios.add(funcionario);
-        }
-    }
-
-    public void adicionarCompra(Cliente cliente, String detalhesCompra) {
-        if (cliente != null && detalhesCompra != null) {
-            if (!historicoCompras.containsKey(cliente)) {
-                historicoCompras.put(cliente, new ArrayList<>());
-            }
-            historicoCompras.get(cliente).add(detalhesCompra);
-        }
-    }
-
-    private Cliente selecionarCliente() {
+    private ClienteEntity selecionarCliente() {
         if (historicoClientes.isEmpty()) {
             System.out.println("Não há clientes cadastrados no histórico.");
             return null;
@@ -151,14 +148,14 @@ public class Historico {
 
         System.out.println("\n--- Selecione um Cliente ---");
         for (int i = 0; i < historicoClientes.size(); i++) {
-            Cliente c = historicoClientes.get(i);
+            ClienteEntity c = historicoClientes.get(i);
             System.out.println((i + 1) + ". " + c.getNome() + " (CPF: " + c.getCpf() + ")");
         }
 
         System.out.print("Digite o número do cliente (0 para cancelar): ");
         try {
             int escolha = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer
+            scanner.nextLine();
 
             if (escolha == 0) {
                 return null;
@@ -172,7 +169,7 @@ public class Historico {
             return historicoClientes.get(escolha - 1);
         } catch (Exception e) {
             System.out.println("Entrada inválida. Por favor, digite um número.");
-            scanner.nextLine(); // Limpar o buffer em caso de erro
+            scanner.nextLine();
             return null;
         }
     }
@@ -184,7 +181,7 @@ public class Historico {
             System.out.println("2. Exibir Histórico de Funcionários");
             System.out.println("3. Exibir Histórico de Compras de um Cliente");
             System.out.println("0. Sair");
-            System.out.println("Escolha uma opcao");
+            System.out.print("Escolha uma opção: ");
 
             try {
                 int opcao = scanner.nextInt();
@@ -198,7 +195,7 @@ public class Historico {
                         exibirHistoricoFuncionarios();
                         break;
                     case 3:
-                        Cliente clienteSelecionado = selecionarCliente();
+                        ClienteEntity clienteSelecionado = selecionarCliente();
                         if (clienteSelecionado != null) {
                             exibirHistoricoCompras(clienteSelecionado);
                         }
@@ -207,17 +204,17 @@ public class Historico {
                         // Fechando os repositórios
                         clienteRepository.fechar();
                         funcionarioRepository.fechar();
+                        vendaRepository.fechar();
                         System.out.println("Saindo do menu de histórico...");
                         return;
                     default:
                         System.out.println("Opção inválida.");
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("Entrada inválida. Por favor, digite um número.");
-                scanner.nextLine(); // Limpar o buffer em caso de erro
+                scanner.nextLine();
             }
 
-            // Pausa para melhor visualização
             System.out.println("\nPressione ENTER para continuar...");
             scanner.nextLine();
         }

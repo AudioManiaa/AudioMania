@@ -1,46 +1,46 @@
-package com.audiomania.repository;
+package com.audiomania.model.repository;
 
-import com.audiomania.entities.ProdutoEntity;
+import com.audiomania.model.entities.VendaEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class ProdutoRepository {
+public class VendaRepository {
 
     private EntityManagerFactory emf;
 
-    public ProdutoRepository() {
+    public VendaRepository() {
         this.emf = Persistence.createEntityManagerFactory("meuPU");
     }
 
-    public ProdutoEntity buscarPorId(Integer id) {
+    public VendaEntity buscarPorId(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(ProdutoEntity.class, id);
+            return em.find(VendaEntity.class, id);
         } finally {
             em.close();
         }
     }
 
-    public List<ProdutoEntity> listarTodos() {
+    public List<VendaEntity> listarTodos() {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<ProdutoEntity> query = em.createQuery(
-                    "SELECT p FROM ProdutoEntity p ORDER BY p.nome",
-                    ProdutoEntity.class);
+            TypedQuery<VendaEntity> query = em.createQuery(
+                    "SELECT v FROM VendaEntity v ORDER BY v.data DESC",
+                    VendaEntity.class);
             return query.getResultList();
         } finally {
             em.close();
         }
     }
 
-    public boolean salvar(ProdutoEntity produto) {
+    public boolean salvar(VendaEntity venda) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(produto);
+            em.persist(venda);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -54,11 +54,11 @@ public class ProdutoRepository {
         }
     }
 
-    public boolean atualizar(ProdutoEntity produto) {
+    public boolean atualizar(VendaEntity venda) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(produto);
+            em.merge(venda);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -76,9 +76,9 @@ public class ProdutoRepository {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            ProdutoEntity produto = em.find(ProdutoEntity.class, id);
-            if (produto != null) {
-                em.remove(produto);
+            VendaEntity venda = em.find(VendaEntity.class, id);
+            if (venda != null) {
+                em.remove(venda);
                 em.getTransaction().commit();
                 return true;
             } else {

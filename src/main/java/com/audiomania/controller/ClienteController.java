@@ -1,7 +1,7 @@
 package com.audiomania.controller;
 
-import com.audiomania.entities.ClienteEntity;
-import com.audiomania.service.ClienteService;
+import com.audiomania.model.entities.ClienteEntity;
+import com.audiomania.model.service.ClienteService;
 import java.util.List;
 
 public class ClienteController {

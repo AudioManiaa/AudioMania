@@ -3,7 +3,7 @@ package com.audiomania.view;
 import java.util.List;
 import java.util.Scanner;
 import com.audiomania.controller.SistemaController;
-import com.audiomania.entities.FuncionarioEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
 
 public class FuncionarioView {
     private final Scanner scanner;

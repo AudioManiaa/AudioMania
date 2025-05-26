@@ -1,7 +1,7 @@
-package com.audiomania.service;
+package com.audiomania.model.service;
 
-import com.audiomania.entities.ProdutoEntity;
-import com.audiomania.repository.ProdutoRepository;
+import com.audiomania.model.entities.ProdutoEntity;
+import com.audiomania.model.repository.ProdutoRepository;
 
 import java.math.BigDecimal;
 import java.util.List;

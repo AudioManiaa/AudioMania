@@ -1,7 +1,7 @@
 package com.audiomania.controller;
 
-import com.audiomania.entities.FuncionarioEntity;
-import com.audiomania.service.FuncionarioService;
+import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.service.FuncionarioService;
 import java.util.List;
 
 public class SistemaController {

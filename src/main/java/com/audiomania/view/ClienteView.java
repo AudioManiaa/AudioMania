@@ -1,7 +1,7 @@
 package com.audiomania.view;
 
 import com.audiomania.controller.ClienteController;
-import com.audiomania.entities.ClienteEntity;
+import com.audiomania.model.entities.ClienteEntity;
 import java.util.List;
 import java.util.Scanner;
 

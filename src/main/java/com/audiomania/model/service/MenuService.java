@@ -6,7 +6,7 @@
  */
 
 
-package com.audiomania.service;
+package com.audiomania.model.service;
 
 import java.util.ArrayList;
 import java.util.List;

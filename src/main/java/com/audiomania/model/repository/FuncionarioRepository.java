@@ -1,46 +1,78 @@
-package com.audiomania.repository;
+package com.audiomania.model.repository;
 
-import com.audiomania.entities.VendaEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class VendaRepository {
+public class FuncionarioRepository {
 
     private EntityManagerFactory emf;
 
-    public VendaRepository() {
+    public FuncionarioRepository() {
         this.emf = Persistence.createEntityManagerFactory("meuPU");
     }
 
-    public VendaEntity buscarPorId(Integer id) {
+    public FuncionarioEntity autenticar(String cpf, String senha) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(VendaEntity.class, id);
+            TypedQuery<FuncionarioEntity> query = em.createQuery(
+                    "SELECT f FROM FuncionarioEntity f WHERE f.cpf = :cpf AND f.senha = :senha",
+                    FuncionarioEntity.class);
+            query.setParameter("cpf", cpf);
+            query.setParameter("senha", senha);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } finally {
             em.close();
         }
     }
 
-    public List<VendaEntity> listarTodos() {
+    public FuncionarioEntity buscarPorCpf(String cpf) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<VendaEntity> query = em.createQuery(
-                    "SELECT v FROM VendaEntity v ORDER BY v.data DESC",
-                    VendaEntity.class);
+            TypedQuery<FuncionarioEntity> query = em.createQuery(
+                    "SELECT f FROM FuncionarioEntity f WHERE f.cpf = :cpf",
+                    FuncionarioEntity.class);
+            query.setParameter("cpf", cpf);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public FuncionarioEntity buscarPorId(Integer id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(FuncionarioEntity.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<FuncionarioEntity> listarTodos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<FuncionarioEntity> query = em.createQuery(
+                    "SELECT f FROM FuncionarioEntity f ORDER BY f.nome",
+                    FuncionarioEntity.class);
             return query.getResultList();
         } finally {
             em.close();
         }
     }
 
-    public boolean salvar(VendaEntity venda) {
+    public boolean salvar(FuncionarioEntity funcionario) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(venda);
+            em.persist(funcionario);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -54,11 +86,11 @@ public class VendaRepository {
         }
     }
 
-    public boolean atualizar(VendaEntity venda) {
+    public boolean atualizar(FuncionarioEntity funcionario) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(venda);
+            em.merge(funcionario);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -76,9 +108,9 @@ public class VendaRepository {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            VendaEntity venda = em.find(VendaEntity.class, id);
-            if (venda != null) {
-                em.remove(venda);
+            FuncionarioEntity funcionario = em.find(FuncionarioEntity.class, id);
+            if (funcionario != null) {
+                em.remove(funcionario);
                 em.getTransaction().commit();
                 return true;
             } else {

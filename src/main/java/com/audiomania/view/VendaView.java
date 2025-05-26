@@ -1,12 +1,12 @@
 package com.audiomania.view;
 
 import com.audiomania.controller.VendaController;
-import com.audiomania.entities.ClienteEntity;
-import com.audiomania.entities.FuncionarioEntity;
-import com.audiomania.entities.ProdutoEntity;
-import com.audiomania.entities.VendaEntity;
-import com.audiomania.service.ClienteService;
-import com.audiomania.service.ProdutoService;
+import com.audiomania.model.entities.ClienteEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.entities.ProdutoEntity;
+import com.audiomania.model.entities.VendaEntity;
+import com.audiomania.model.service.ClienteService;
+import com.audiomania.model.service.ProdutoService;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;

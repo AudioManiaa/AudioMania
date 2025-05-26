@@ -2,7 +2,7 @@ package com.audiomania.view;
 
 import java.util.Scanner;
 import com.audiomania.controller.SistemaController;
-import com.audiomania.entities.FuncionarioEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
 
 public class LoginView {
     private final Scanner scanner;

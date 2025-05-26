@@ -1,7 +1,7 @@
-package com.audiomania.service;
+package com.audiomania.model.service;
 
-import com.audiomania.entities.ClienteEntity;
-import com.audiomania.repository.ClienteRepository;
+import com.audiomania.model.entities.ClienteEntity;
+import com.audiomania.model.repository.ClienteRepository;
 import java.time.LocalDate;
 import java.util.List;
 

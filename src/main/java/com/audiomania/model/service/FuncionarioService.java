@@ -1,4 +1,4 @@
-package com.audiomania.service;
+package com.audiomania.model.service;
 
 import java.time.LocalDate;
 import java.sql.Connection;
@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.audiomania.entities.FuncionarioEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
 
 public class FuncionarioService {
 

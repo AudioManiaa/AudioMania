@@ -1,13 +1,13 @@
-package com.audiomania.service;
+package com.audiomania.model.service;
 
-import com.audiomania.entities.ClienteEntity;
-import com.audiomania.entities.FuncionarioEntity;
-import com.audiomania.entities.ProdutoEntity;
-import com.audiomania.entities.VendaEntity;
-import com.audiomania.repository.ClienteRepository;
-import com.audiomania.repository.FuncionarioRepository;
-import com.audiomania.repository.ProdutoRepository;
-import com.audiomania.repository.VendaRepository;
+import com.audiomania.model.entities.ClienteEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.entities.ProdutoEntity;
+import com.audiomania.model.entities.VendaEntity;
+import com.audiomania.model.repository.ClienteRepository;
+import com.audiomania.model.repository.FuncionarioRepository;
+import com.audiomania.model.repository.ProdutoRepository;
+import com.audiomania.model.repository.VendaRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

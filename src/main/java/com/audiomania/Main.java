@@ -3,21 +3,19 @@ package com.audiomania;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.audiomania.controller.Historico;
-import com.audiomania.controller.VendaController;
-import com.audiomania.entities.FuncionarioEntity;
-import com.audiomania.service.FuncionarioService;
-import com.audiomania.service.MenuService;
-import com.audiomania.service.MenuService.OpcaoMenu;
+import com.audiomania.view.HistoricoView;
+import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.service.FuncionarioService;
+import com.audiomania.model.service.MenuService;
+import com.audiomania.model.service.MenuService.OpcaoMenu;
 import com.audiomania.view.ClienteView;
 import com.audiomania.view.FuncionarioView;
 import com.audiomania.view.LoginView;
 import com.audiomania.view.ProdutoView;
 import com.audiomania.view.VendaView;
-import com.audiomania.service.ClienteService;
-import com.audiomania.service.FuncionarioService;
-import com.audiomania.service.ProdutoService;
-import com.audiomania.service.VendaService;
+import com.audiomania.model.service.ClienteService;
+import com.audiomania.model.service.ProdutoService;
+import com.audiomania.model.service.VendaService;
 
 public class Main {
     public static void main(String[] args) {
@@ -57,7 +55,7 @@ public class Main {
 
             opcoes.add(new OpcaoMenu("Histórico", scanner -> {
                 System.out.println("Funcionalidade de Histórico");
-                Historico historico = new Historico();
+                HistoricoView historico = new HistoricoView();
                 historico.menuHistorico();
             }));
 

@@ -1,7 +1,7 @@
 package com.audiomania.view;
 
 import com.audiomania.controller.ProdutoController;
-import com.audiomania.entities.ProdutoEntity;
+import com.audiomania.model.entities.ProdutoEntity;
 
 import java.math.BigDecimal;
 import java.util.List;

@@ -1,62 +1,46 @@
-package com.audiomania.repository;
+package com.audiomania.model.repository;
 
-import com.audiomania.entities.ClienteEntity;
+import com.audiomania.model.entities.ProdutoEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class ClienteRepository {
+public class ProdutoRepository {
 
     private EntityManagerFactory emf;
 
-    public ClienteRepository() {
+    public ProdutoRepository() {
         this.emf = Persistence.createEntityManagerFactory("meuPU");
     }
 
-    public ClienteEntity buscarPorCpf(String cpf) {
+    public ProdutoEntity buscarPorId(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<ClienteEntity> query = em.createQuery(
-                    "SELECT c FROM ClienteEntity c WHERE c.cpf = :cpf",
-                    ClienteEntity.class);
-            query.setParameter("cpf", cpf);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+            return em.find(ProdutoEntity.class, id);
         } finally {
             em.close();
         }
     }
 
-    public ClienteEntity buscarPorId(Integer id) {
+    public List<ProdutoEntity> listarTodos() {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(ClienteEntity.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public List<ClienteEntity> listarTodos() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<ClienteEntity> query = em.createQuery(
-                    "SELECT c FROM ClienteEntity c ORDER BY c.nome",
-                    ClienteEntity.class);
+            TypedQuery<ProdutoEntity> query = em.createQuery(
+                    "SELECT p FROM ProdutoEntity p ORDER BY p.nome",
+                    ProdutoEntity.class);
             return query.getResultList();
         } finally {
             em.close();
         }
     }
 
-    public boolean salvar(ClienteEntity cliente) {
+    public boolean salvar(ProdutoEntity produto) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(cliente);
+            em.persist(produto);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -70,11 +54,11 @@ public class ClienteRepository {
         }
     }
 
-    public boolean atualizar(ClienteEntity cliente) {
+    public boolean atualizar(ProdutoEntity produto) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(cliente);
+            em.merge(produto);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -92,9 +76,9 @@ public class ClienteRepository {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            ClienteEntity cliente = em.find(ClienteEntity.class, id);
-            if (cliente != null) {
-                em.remove(cliente);
+            ProdutoEntity produto = em.find(ProdutoEntity.class, id);
+            if (produto != null) {
+                em.remove(produto);
                 em.getTransaction().commit();
                 return true;
             } else {

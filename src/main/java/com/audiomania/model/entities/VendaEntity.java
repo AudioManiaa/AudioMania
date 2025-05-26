@@ -1,4 +1,4 @@
-package com.audiomania.entities;
+package com.audiomania.model.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
