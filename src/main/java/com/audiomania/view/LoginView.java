@@ -1,99 +1,112 @@
 package com.audiomania.view;
 
-import java.util.Scanner;
 import com.audiomania.controller.SistemaController;
 import com.audiomania.entities.FuncionarioEntity;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class LoginView {
-    private final Scanner scanner;
     private final SistemaController controller;
+    private FuncionarioEntity authenticatedUser = null;
 
     public LoginView() {
-        scanner = new Scanner(System.in);
         controller = new SistemaController();
     }
 
     /**
-     * Inicia a aplicação de login
-     * @return Funcionário autenticado ou null em caso de saída
+     * Inicia a interface gráfica de login.
+     * @return Funcionário autenticado ou null se o login falhar ou for cancelado.
      */
     public FuncionarioEntity iniciarLogin() {
-        System.out.println("\n===== SISTEMA AUDIO MANIA =====\n");
-        System.out.println("1. Login");
-        System.out.println("2. Registrar novo funcionário");
-        System.out.println("0. Sair");
-        System.out.print("\nEscolha uma opção: ");
+        // Use SwingUtilities.invokeLater to ensure GUI updates are on the Event Dispatch Thread
+        // However, since this method needs to return a value and block,
+        // we'll run the dialog creation and setVisible(true) directly.
+        // The modal nature of JDialog will handle the blocking.
 
-        int opcao = -1;
-        try {
-            opcao = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Opção inválida!");
-            return null;
-        }
+        JDialog loginDialog = new JDialog((Frame) null, "Login - Audio Mania", true); // Modal
+        loginDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        loginDialog.setSize(350, 200);
+        loginDialog.setLocationRelativeTo(null); // Center on screen
 
-        switch (opcao) {
-            case 1:
-                return fazerLogin();
-            case 2:
-                cadastrarNovoFuncionario();
-                return null;
-            case 0:
-                return null;
-            default:
-                System.out.println("Opção inválida!");
-                return null;
-        }
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // CPF Label and TextField
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("CPF:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        JTextField cpfField = new JTextField(20);
+        panel.add(cpfField, gbc);
+
+        // Senha Label and PasswordField
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Senha:"), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        JPasswordField passwordField = new JPasswordField(20);
+        panel.add(passwordField, gbc);
+
+        // Login Button
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton loginButton = new JButton("Login");
+        panel.add(loginButton, gbc);
+
+        // Cancel Button (Optional)
+        // JButton cancelButton = new JButton("Cancelar");
+        // gbc.gridx = 0; (adjust as needed if adding cancel button)
+        // gbc.gridy = 3;
+        // panel.add(cancelButton, gbc);
+        // cancelButton.addActionListener(e -> loginDialog.dispose());
+
+
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cpf = cpfField.getText();
+                String senha = new String(passwordField.getPassword());
+
+                // Basic validation (optional, but good practice)
+                if (cpf.isEmpty() || senha.isEmpty()) {
+                    JOptionPane.showMessageDialog(loginDialog, "CPF e Senha não podem estar vazios.", "Erro de Entrada", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                authenticatedUser = controller.realizarLogin(cpf, senha);
+
+                if (authenticatedUser != null) {
+                    JOptionPane.showMessageDialog(loginDialog, "Login realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    loginDialog.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(loginDialog, "CPF ou Senha inválidos.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                    passwordField.setText(""); // Clear password field
+                    // cpfField.setText(""); // Optionally clear CPF field
+                }
+            }
+        });
+
+        loginDialog.add(panel);
+        // loginDialog.pack(); // pack() can be used instead of setSize if preferred
+        loginDialog.setVisible(true); // This blocks until the dialog is disposed
+
+        return authenticatedUser;
     }
 
-    private FuncionarioEntity fazerLogin() {
-        System.out.println("\n--- Login de Funcionário ---");
-        System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
-
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
-
-        FuncionarioEntity funcionario = controller.realizarLogin(cpf, senha);
-
-        if (funcionario != null) {
-            System.out.println("\nLogin realizado com sucesso!");
-            return funcionario;
-        } else {
-            System.out.println("\nCPF ou senha incorretos!");
-            return null;
-        }
-    }
-
-    private void cadastrarNovoFuncionario() {
-        System.out.println("\n--- Cadastro de Novo Funcionário ---");
-
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
-
-        System.out.print("Cargo: ");
-        String cargo = scanner.nextLine();
-
-        System.out.print("Telefone: ");
-        String telefone = scanner.nextLine();
-
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
-
-        boolean sucesso = controller.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
-
-        if (sucesso) {
-            System.out.println("\nFuncionário cadastrado com sucesso!");
-        } else {
-            System.out.println("\nErro ao cadastrar funcionário!");
-        }
-    }
-
-
-    public void fechar() {
-        scanner.close();
-    }
+    // The fechar() method is no longer needed as Scanner is removed.
+    // If SistemaController needs resource cleanup, it should handle it itself
+    // or provide a method that MainApp can call.
+    // public void fechar() {
+    // }
 }
