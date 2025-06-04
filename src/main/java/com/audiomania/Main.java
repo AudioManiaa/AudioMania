@@ -1,99 +1,116 @@
 package com.audiomania;
 
-import java.awt.Color;
-import java.util.Scanner;
-
-import com.audiomania.view.HistoricoView;
+import com.audiomania.view.*;
 import com.audiomania.model.entities.FuncionarioEntity;
-import com.audiomania.view.ClienteView;
-import com.audiomania.view.FuncionarioView;
-import com.audiomania.view.LoginView;
-import com.audiomania.view.ProdutoView;
-import com.audiomania.view.VendaView;
-import com.audiomania.model.service.FuncionarioService;
-import com.audiomania.model.service.ClienteService;
-import com.audiomania.model.service.ProdutoService;
-import com.audiomania.model.service.VendaService;
-
-import javax.swing.*;
-
+import com.audiomania.model.service.*;
 import com.audiomania.controller.StyleController;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+// Menu Principal em Swing com StyleController
 public class Main {
+
     public static void main(String[] args) {
-        //Instanciando o StyleController
-        StyleController styleController = new StyleController();
+        SwingUtilities.invokeLater(() -> {
+            StyleController styleController = new StyleController();
+            LoginView loginView = new LoginView();
+            FuncionarioEntity funcionarioLogado = loginView.iniciarLogin();
 
-        //Estilizando a Janela
-        styleController.estilizarJanela(new JFrame(), null);
+            if (funcionarioLogado != null) {
+                JFrame frame = new JFrame("AudioMania - Menu Principal");
+                styleController.estilizarJanela(frame, null);
 
-        LoginView loginView = new LoginView();
-        FuncionarioEntity funcionarioLogado = loginView.iniciarLogin();
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                styleController.estilizarPanel(panel, Color.DARK_GRAY);
 
-        if (funcionarioLogado != null) {
-            Scanner scanner = new Scanner(System.in);
-            boolean sair = false;
+                JLabel titulo = new JLabel("Menu Principal");
+                styleController.estilizarTitulo(titulo, Color.WHITE, 32);
+                titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(titulo);
 
-            while (!sair) {
-                System.out.println("\nMenu Principal:");
-                System.out.println("1. Funcionário");
-                System.out.println("2. Gerenciar Funcionários");
-                System.out.println("3. Produtos");
-                System.out.println("4. Vendas");
-                System.out.println("5. Clientes");
-                System.out.println("6. Histórico");
-                System.out.println("7. Sair");
-                System.out.print("Escolha uma opção: ");
+                panel.add(Box.createVerticalStrut(30));
 
-                String opcao = scanner.nextLine();
+                // Opções de menu como botões
+                JButton btnFuncionario = new JButton("Funcionário");
+                JButton btnGerenciarFuncionarios = new JButton("Gerenciar Funcionários");
+                JButton btnProdutos = new JButton("Produtos");
+                JButton btnVendas = new JButton("Vendas");
+                JButton btnClientes = new JButton("Clientes");
+                JButton btnHistorico = new JButton("Histórico");
+                JButton btnSair = new JButton("Sair");
 
-                switch (opcao) {
-                    case "1":
-                        System.out.println("Funcionário logado: " + funcionarioLogado.getNome());
-                        System.out.println("CPF: " + funcionarioLogado.getCpf());
-                        System.out.println("Cargo: " + funcionarioLogado.getCargo());
-                        System.out.println("Telefone: " + funcionarioLogado.getTelefone());
-                        break;
-                    case "2":
-                        FuncionarioView funcionarioView = new FuncionarioView();
-                        funcionarioView.iniciarGerenciamento();
-                        break;
-                    case "3":
-                        ProdutoView produtoView = new ProdutoView();
-                        produtoView.iniciarGerenciamento();
-                        break;
-                    case "4":
-                        System.out.println("Gerenciamento de Vendas");
-                        VendaView vendaView = new VendaView(funcionarioLogado);
-                        vendaView.iniciarGerenciamento();
-                        break;
-                    case "5":
-                        ClienteView clienteView = new ClienteView();
-                        clienteView.iniciarGerenciamento();
-                        break;
-                    case "6":
-                        System.out.println("Funcionalidade de Histórico");
-                        HistoricoView historico = new HistoricoView();
-                        historico.menuHistorico();
-                        break;
-                    case "7":
-                        sair = true;
-                        break;
-                    default:
-                        System.out.println("Opção inválida. Tente novamente.");
-                        break;
+                JButton[] botoes = {
+                    btnFuncionario, btnGerenciarFuncionarios, btnProdutos,
+                    btnVendas, btnClientes, btnHistorico, btnSair
+                };
+
+                for (JButton btn : botoes) {
+                    styleController.estilizarBotaoGrande(btn, new Color(60,60,60), Color.WHITE, 18);
+                    btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    panel.add(Box.createVerticalStrut(10));
+                    panel.add(btn);
                 }
+
+                // Ações dos botões
+                btnFuncionario.addActionListener(e -> {
+                    JOptionPane.showMessageDialog(frame,
+                        "Funcionário logado:\nNome: " + funcionarioLogado.getNome() +
+                        "\nCPF: " + funcionarioLogado.getCpf() +
+                        "\nCargo: " + funcionarioLogado.getCargo() +
+                        "\nTelefone: " + funcionarioLogado.getTelefone(),
+                        "Informações do Funcionário",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                });
+
+                btnGerenciarFuncionarios.addActionListener(e -> {
+                    new FuncionarioView().iniciarGerenciamento();
+                });
+
+                btnProdutos.addActionListener(e -> {
+                    new ProdutoView().iniciarGerenciamento();
+                });
+
+                btnVendas.addActionListener(e -> {
+                    new VendaView(funcionarioLogado).iniciarGerenciamento();
+                });
+
+                btnClientes.addActionListener(e -> {
+                    new ClienteView().iniciarGerenciamento();
+                });
+
+                btnHistorico.addActionListener(e -> {
+                    new HistoricoView().menuHistorico();
+                });
+
+                btnSair.addActionListener(e -> {
+                    frame.dispose();
+                    encerrar(loginView);
+                });
+
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setContentPane(panel);
+                frame.setSize(350, 550);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            } else {
+                loginView.fechar();
+                encerrar(loginView);
             }
+        });
+    }
 
-            scanner.close();
-        }
-
-        loginView.fechar();
-        // Fechar recursos do sistema
+    // Fecha tudo corretamente
+    private static void encerrar(LoginView loginView) {
+        if (loginView != null) loginView.fechar();
         FuncionarioService.fecharRecursos();
         ClienteService.fecharRecursos();
         ProdutoService.fecharRecursos();
         VendaService.fecharRecursos();
+        System.exit(0);
     }
 }
