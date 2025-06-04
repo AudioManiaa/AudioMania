@@ -9,18 +9,18 @@ public class StyleController {
     //Cria um Botao Personalizado
     /**
      * 
-     * @param botao
-     * @param cor
-     * @param textColor
-     * @param tamanhoFonte
-     * @param tamanhoBotaoX
-     * @param tamanhoBotaoY
+     * param botao
+     * param cor
+     * param textColor
+     * param tamanhoFonte
+     * param tamanhoBotaoX
+     * param tamanhoBotaoY
      */
     public void estilizarBotao(JButton botao, Color cor, Color textColor, int tamanhoFonte, int tamanhoBotaoX, int tamanhoBotaoY) {
         botao.setFocusPainted(false);
         botao.setBackground(cor);
         botao.setForeground(textColor);
-        botao.setFont(new Font("Arial", Font.BOLD, tamanhoFonte));
+        botao.setFont(new Font("Montserrat", Font.BOLD, tamanhoFonte));
         botao.setOpaque(true);
         botao.setContentAreaFilled(true);
         botao.setBorderPainted(false);
@@ -30,10 +30,10 @@ public class StyleController {
     //Cria um Botao Grande 200x50
     /**
      * 
-     * @param botao
-     * @param cor
-     * @param textColor
-     * @param tamanhoFonte
+     * param botao
+     * param cor
+     * param textColor
+     * param tamanhoFonte
      */
     public void estilizarBotaoGrande(JButton botao, Color cor, Color textColor, int tamanhoFonte) {
         estilizarBotao(botao, cor, textColor, tamanhoFonte, 200, 50);
@@ -42,10 +42,10 @@ public class StyleController {
     //Cria um Botao Medio 150x40
     /**
      * 
-     * @param botao
-     * @param cor
-     * @param textColor
-     * @param tamanhoFonte
+     * param botao
+     * param cor
+     * param textColor
+     * param tamanhoFonte
      */
     public void estilizarBotaoMedio(JButton botao, Color cor, Color textColor, int tamanhoFonte) {
         estilizarBotao(botao, cor, textColor, tamanhoFonte, 150, 40);
@@ -54,10 +54,10 @@ public class StyleController {
     //Cria um Botao Pequeno 100x30
     /**
      * 
-     * @param botao
-     * @param cor
-     * @param textColor
-     * @param tamanhoFonte
+     * param botao
+     * param cor
+     * param textColor
+     * param tamanhoFonte
      */
     public void estilizarBotaoPequeno(JButton botao, Color cor, Color textColor, int tamanhoFonte) {
         estilizarBotao(botao, cor, textColor, tamanhoFonte, 100, 30);
@@ -66,10 +66,10 @@ public class StyleController {
     //Cria um Botao Mini 48x48
     /**
      * 
-     * @param botao
-     * @param cor
-     * @param textColor
-     * @param tamanhoFonte
+     * param botao
+     * param cor
+     * param textColor
+     * param tamanhoFonte
      */
     public void estilizarBotaoMini(JButton botao, Color cor, Color textColor, int tamanhoFonte) {
         estilizarBotao(botao, cor, textColor, tamanhoFonte, 48, 48);
@@ -78,20 +78,20 @@ public class StyleController {
     //Cria um Titulo
     /**
      * 
-     * @param titulo
-     * @param cor
-     * @param tamanhoFonte
+     * param titulo
+     * param cor
+     * param tamanhoFonte
      */
     public void estilizarTitulo(JLabel titulo, Color cor, int tamanhoFonte) {
-        titulo.setFont(new Font("Arial", Font.BOLD, tamanhoFonte));
+        titulo.setFont(new Font("Montserrat", Font.BOLD, tamanhoFonte));
         titulo.setForeground(cor);
     }
 
     //Cria um Panel
     /**
      * 
-     * @param panel
-     * @param cor
+     * param panel
+     * param cor
      */
     public void estilizarPanel(JPanel panel, Color cor) {
         panel.setBackground(cor);
@@ -101,8 +101,8 @@ public class StyleController {
     //Cria uma Janela
     /**
      * 
-     * @param janela
-     * @param Fundo
+     * param janela
+     * param Fundo
      */
     public void estilizarJanela(JFrame janela, Color Fundo) {
         if (Fundo == null) {
@@ -115,12 +115,12 @@ public class StyleController {
     //Cria uma Tabela
     /**
      * 
-     * @param tabela
-     * @param cor
-     * @param tamanhoFonte
-     * @param tamanhoFonteHeader
-     * @param espacamentoLateral
-     * @param espacamentoVertical
+     * param tabela
+     * param cor
+     * param tamanhoFonte
+     * param tamanhoFonteHeader
+     * param espacamentoLateral
+     * param espacamentoVertical
      */
     public void estilizarTabela(JTable tabela, Color cor, int tamanhoFonte, int tamanhoFonteHeader, int espacamentoLateral, int espacamentoVertical) {
         if (cor == null) {
@@ -141,17 +141,17 @@ public class StyleController {
 
         tabela.setBackground(cor);
         tabela.setForeground(Color.WHITE);
-        tabela.setFont(new Font("Arial", Font.PLAIN, tamanhoFonte));
-        tabela.getTableHeader().setFont(new Font("Arial", Font.BOLD, tamanhoFonteHeader));
+        tabela.setFont(new Font("Montserrat", Font.PLAIN, tamanhoFonte));
+        tabela.getTableHeader().setFont(new Font("Montserrat", Font.BOLD, tamanhoFonteHeader));
         tabela.getTableHeader().setBorder(BorderFactory.createEmptyBorder(espacamentoVertical, espacamentoLateral, espacamentoVertical, espacamentoLateral));
     }
 
     //Cria um TextField
     /**
      * 
-     * @param campo
-     * @param cor
-     * @param tamanhoFonte
+     * param campo
+     * param cor
+     * param tamanhoFonte
      */
     public void estilizarTextField(JTextField campo, Color cor, int tamanhoFonte) {
         if (cor == null) {
@@ -162,16 +162,16 @@ public class StyleController {
         }
 
         campo.setForeground(cor);
-        campo.setFont(new Font("Arial", Font.PLAIN, tamanhoFonte));
+        campo.setFont(new Font("Montserrat", Font.PLAIN, tamanhoFonte));
     }
 
     //Cria um TextArea
     /**
      * 
-     * @param area
-     * @param background
-     * @param foreground
-     * @param fontSize
+     * param area
+     * param background
+     * param foreground
+     * param fontSize
      */
     public void estilizarTextArea(JTextArea area, Color background, Color foreground, int fontSize) {
         if (background == null) {
@@ -186,15 +186,15 @@ public class StyleController {
 
         area.setBackground(background);
         area.setForeground(foreground);
-        area.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        area.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria um PasswordField que esconde a senha
     /**
      * 
-     * @param field
-     * @param background
-     * @param fontSize
+     * param field
+     * param background
+     * param fontSize
      */
     public void estilizarPasswordField(JPasswordField field, Color background, int fontSize) {
         if (background == null) {
@@ -206,16 +206,16 @@ public class StyleController {
 
         field.setBackground(background);
         field.setForeground(Color.WHITE);
-        field.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        field.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria um ComboBox com varias opcoes
     /**
      * 
-     * @param combo
-     * @param background
-     * @param foreground
-     * @param fontSize
+     * param combo
+     * param background
+     * param foreground
+     * param fontSize
      */
     public void estilizarComboBox(JComboBox<?> combo, Color background, Color foreground, int fontSize) {
         if (background == null) {
@@ -230,16 +230,16 @@ public class StyleController {
 
         combo.setBackground(background);
         combo.setForeground(foreground);
-        combo.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        combo.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria um CheckBox
     /**
      * 
-     * @param checkBox
-     * @param background
-     * @param foreground
-     * @param fontSize
+     * param checkBox
+     * param background
+     * param foreground
+     * param fontSize
      */
     public void estilizarCheckBox(JCheckBox checkBox, Color background, Color foreground, int fontSize) {
         if (background == null) {
@@ -254,16 +254,16 @@ public class StyleController {
 
         checkBox.setBackground(background);
         checkBox.setForeground(foreground);
-        checkBox.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        checkBox.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria um RadioButton
     /**
      * 
-     * @param radioButton
-     * @param background
-     * @param foreground
-     * @param fontSize
+     * param radioButton
+     * param background
+     * param foreground
+     * param fontSize
      */
     public void estilizarRadioButton(JRadioButton radioButton, Color background, Color foreground, int fontSize) {
         if (background == null) {
@@ -278,15 +278,15 @@ public class StyleController {
 
         radioButton.setBackground(background);
         radioButton.setForeground(foreground);
-        radioButton.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        radioButton.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria um Slider
     /**
      * 
-     * @param slider
-     * @param trackColor
-     * @param thumbColor
+     * param slider
+     * param trackColor
+     * param thumbColor
      */
     public void estilizarSlider(JSlider slider, Color trackColor, Color thumbColor) {
         if (trackColor == null) {
@@ -303,9 +303,9 @@ public class StyleController {
     //Cria uma ProgressBar
     /**
      * 
-     * @param progressBar
-     * @param background
-     * @param foreground
+     * param progressBar
+     * param background
+     * param foreground
      */
     public void estilizarProgressBar(JProgressBar progressBar, Color background, Color foreground) {
         if (background == null) {
@@ -322,8 +322,8 @@ public class StyleController {
     //Cria uma MenuBar
     /**
      * 
-     * @param menuBar
-     * @param background
+     * param menuBar
+     * param background
      */
     public void estilizarMenuBar(JMenuBar menuBar, Color background) {
         if (background == null) {
@@ -336,9 +336,9 @@ public class StyleController {
     //Cria um Menu 
     /**
      * 
-     * @param menu
-     * @param foreground
-     * @param fontSize
+     * param menu
+     * param foreground
+     * param fontSize
      */
     public void estilizarMenu(JMenu menu, Color foreground, int fontSize) {
         if (foreground == null) {
@@ -349,15 +349,15 @@ public class StyleController {
         }
 
         menu.setForeground(foreground);
-        menu.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        menu.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria um MenuItem
     /**
      * 
-     * @param menuItem
-     * @param foreground
-     * @param fontSize
+     * param menuItem
+     * param foreground
+     * param fontSize
      */
     public void estilizarMenuItem(JMenuItem menuItem, Color foreground, int fontSize) {
         if (foreground == null) {
@@ -368,16 +368,16 @@ public class StyleController {
         }
 
         menuItem.setForeground(foreground);
-        menuItem.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        menuItem.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria uma TabbedPane
     /**
      * 
-     * @param tabbedPane
-     * @param background
-     * @param foreground
-     * @param fontSize
+     * param tabbedPane
+     * param background
+     * param foreground
+     * param fontSize
      */
     public void estilizarTabbedPane(JTabbedPane tabbedPane, Color background, Color foreground, int fontSize) {
         if (background == null) {
@@ -392,14 +392,14 @@ public class StyleController {
 
         tabbedPane.setBackground(background);
         tabbedPane.setForeground(foreground);
-        tabbedPane.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        tabbedPane.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria uma ScrollPane
     /**
      * 
-     * @param scrollPane
-     * @param border
+     * param scrollPane
+     * param border
      */
     public void estilizarScrollPane(JScrollPane scrollPane, Border border) {
         scrollPane.setBorder(border);
@@ -408,10 +408,10 @@ public class StyleController {
     //Cria um ToolTip
     /**
      * 
-     * @param toolTip
-     * @param background
-     * @param foreground
-     * @param fontSize
+     * param toolTip
+     * param background
+     * param foreground
+     * param fontSize
      */
     public void estilizarToolTip(JToolTip toolTip, Color background, Color foreground, int fontSize) {
         if (background == null) {
@@ -426,14 +426,14 @@ public class StyleController {
 
         toolTip.setBackground(background);
         toolTip.setForeground(foreground);
-        toolTip.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        toolTip.setFont(new Font("Montserrat", Font.PLAIN, fontSize));
     }
 
     //Cria uma Borda
     /**
      * 
-     * @param component
-     * @param border
+     * param component
+     * param border
      */
     public void estilizarBorda(JComponent component, Border border) {
         if (border == null) {
