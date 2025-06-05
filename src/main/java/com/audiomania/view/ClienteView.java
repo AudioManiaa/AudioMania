@@ -2,16 +2,73 @@ package com.audiomania.view;
 
 import com.audiomania.controller.ClienteController;
 import com.audiomania.model.entities.ClienteEntity;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Scanner;
 
-public class ClienteView {
+public class ClienteView extends JFrame {
     private final Scanner scanner;
     private final ClienteController controller;
+    private JButton listarClientesButton;
+    private JButton cadastrarClientesButton;
+    private JButton atualizarClientesButton;
+    private JButton excluirClientesButton;
+    private JButton sairButton;
 
     public ClienteView() {
         scanner = new Scanner(System.in);
         controller = new ClienteController();
+        setVisible(true);
+        setTitle("Sistema Audio Mania - Gerenciamento de Clientes");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initComponents();
+    }
+
+    public void initComponents() {
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JLabel titleLabel = new JLabel("==== GERENCIAMENTO DE CLIENTES ====");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(titleLabel, gbc);
+
+        gbc.gridwidth = 1;
+
+        listarClientesButton = new JButton("Listar clientes");
+        cadastrarClientesButton = new JButton("Cadastrar clientes");
+        atualizarClientesButton = new JButton("Atualizar clientes");
+        excluirClientesButton = new JButton("Excluir clientes");
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(listarClientesButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(cadastrarClientesButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        panel.add(atualizarClientesButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        panel.add(excluirClientesButton, gbc);
+
+        add(panel);
     }
 
     public void iniciarGerenciamento() {
