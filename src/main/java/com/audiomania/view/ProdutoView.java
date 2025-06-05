@@ -1,256 +1,425 @@
 package com.audiomania.view;
 
-import com.audiomania.controller.ProdutoController;
-import com.audiomania.model.entities.ProdutoEntity;
+import com.audiomania.utils.StyleConfigurator;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Scanner;
-
-public class ProdutoView {
-    private final Scanner scanner;
-    private final ProdutoController controller;
+public class ProdutoView extends JFrame {
+    private JTextField buscaField;
+    private JComboBox<String> categoriaCombo;
+    private JButton buscarButton;
+    private JButton novoButton;
+    private JButton editarButton;
+    private JButton excluirButton;
+    private JButton fecharButton;
+    private JTable produtosTable;
+    private DefaultTableModel tableModel;
 
     public ProdutoView() {
-        this.scanner = new Scanner(System.in);
-        this.controller = new ProdutoController();
+        // Aplicar tema padrao
+        StyleConfigurator.applyStyles();
+
+        setTitle("Gerenciar Produtos - Audio Mania");
+        setSize(800, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initComponents();
+        carregarProdutos();
     }
 
-    public void iniciarGerenciamento() {
-        boolean sair = false;
+    private void initComponents() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
 
-        while (!sair) {
-            System.out.println("\n===== GERENCIAMENTO DE PRODUTOS =====\n");
-            System.out.println("1. Listar Produtos");
-            System.out.println("2. Cadastrar Produto");
-            System.out.println("3. Atualizar Produto");
-            System.out.println("4. Excluir Produto");
-            System.out.println("0. Voltar ao Menu Principal");
-            System.out.print("\nEscolha uma opção: ");
+        // Painel busca
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout());
 
-            int opcao = -1;
-            try {
-                opcao = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Opção inválida!");
-                continue;
+        JLabel titleLabel = new JLabel("GERENCIAR PRODUTOS");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JLabel buscaLabel = new JLabel("Buscar:");
+        buscaField = new JTextField(15);
+
+        JLabel categoriaLabel = new JLabel("Categoria:");
+        String[] categorias = {"Exemplo", "Exemplo01", "Exemplo02", "Exemplo03", "Exemplo04"};
+        categoriaCombo = new JComboBox<>(categorias);
+
+        buscarButton = new JButton("Buscar");
+
+        topPanel.add(titleLabel);
+        topPanel.add(Box.createHorizontalStrut(20));
+        topPanel.add(buscaLabel);
+        topPanel.add(buscaField);
+        topPanel.add(categoriaLabel);
+        topPanel.add(categoriaCombo);
+        topPanel.add(buscarButton);
+
+        // Painel tabela
+        String[] colunas = {"ID", "Nome", "Categoria", "Marca", "Preço", "Estoque"};
+        tableModel = new DefaultTableModel(colunas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
+        };
+        produtosTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(produtosTable);
 
-            switch (opcao) {
-                case 1:
-                    listarProdutos();
-                    break;
-                case 2:
-                    cadastrarProduto();
-                    break;
-                case 3:
-                    atualizarProduto();
-                    break;
-                case 4:
-                    excluirProduto();
-                    break;
-                case 0:
-                    sair = true;
-                    break;
-                default:
-                    System.out.println("Opção inválida!");
-            }
+        // Painel botões
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout());
 
-            if (!sair) {
-                System.out.print("\nPressione ENTER para continuar...");
-                scanner.nextLine();
+        novoButton = new JButton("Novo");
+        editarButton = new JButton("Editar");
+        excluirButton = new JButton("Excluir");
+        fecharButton = new JButton("Fechar");
+
+        bottomPanel.add(novoButton);
+        bottomPanel.add(editarButton);
+        bottomPanel.add(excluirButton);
+        bottomPanel.add(fecharButton);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        add(panel);
+
+        // Listeners
+        buscarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                buscarProduto();
             }
-        }
+        });
+
+        novoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                novoProduto();
+            }
+        });
+
+        editarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editarProduto();
+            }
+        });
+
+        excluirButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                excluirProduto();
+            }
+        });
+
+        fecharButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
     }
 
-    private void listarProdutos() {
-        List<ProdutoEntity> produtos = controller.listarProdutos();
+    private void buscarProduto() {
+        String termo = buscaField.getText();
+        String categoria = (String) categoriaCombo.getSelectedItem();
 
-        if (produtos.isEmpty()) {
-            System.out.println("Nenhum produto cadastrado.");
-            return;
-        }
-
-        System.out.println("\n=== LISTA DE PRODUTOS ===\n");
-        System.out.printf("%-5s | %-30s | %-10s | %-10s | %-20s | %-20s\n",
-                "ID", "NOME", "PREÇO", "ESTOQUE", "CATEGORIA", "MARCA");
-        System.out.println("--------------------------------------------------------------------------------------------");
-
-        for (ProdutoEntity produto : produtos) {
-            System.out.printf("%-5d | %-30s | R$ %-8.2f | %-10d | %-20s | %-20s\n",
-                    produto.getId(),
-                    produto.getNome(),
-                    produto.getPreco(),
-                    produto.getQuantidadeEstoque(),
-                    produto.getCategoria(),
-                    produto.getMarca());
-        }
-    }
-
-    private void cadastrarProduto() {
-        System.out.println("\n=== CADASTRO DE PRODUTO ===\n");
-
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("Descrição: ");
-        String descricao = scanner.nextLine();
-
-        System.out.print("Preço: ");
-        BigDecimal preco;
-        try {
-            preco = new BigDecimal(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Preço inválido.");
-            return;
-        }
-
-        System.out.print("Quantidade em Estoque: ");
-        int estoque;
-        try {
-            estoque = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Quantidade inválida.");
-            return;
-        }
-
-        System.out.print("Categoria: ");
-        String categoria = scanner.nextLine();
-
-        System.out.print("Marca: ");
-        String marca = scanner.nextLine();
-
-        boolean sucesso = controller.cadastrarProduto(nome, descricao, preco, estoque, categoria, marca);
-
-        if (sucesso) {
-            System.out.println("Produto cadastrado com sucesso!");
+        if (termo.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Digite algo para buscar!", "Aviso", JOptionPane.WARNING_MESSAGE);
         } else {
-            System.out.println("Erro ao cadastrar produto.");
+            JOptionPane.showMessageDialog(this,
+                    "Buscando por: " + termo + "\nCategoria: " + categoria,
+                    "Busca", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private void atualizarProduto() {
-        System.out.println("\n=== ATUALIZAÇÃO DE PRODUTO ===\n");
+    private void novoProduto() {
+        CadastroProdutoView cadastroView = new CadastroProdutoView(this);
+        cadastroView.setVisible(true);
+    }
 
-        listarProdutos();
+    private void editarProduto() {
+        int linha = produtosTable.getSelectedRow();
 
-        System.out.print("\nDigite o ID do produto que deseja atualizar: ");
-        int id;
-        try {
-            id = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("ID inválido.");
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para editar!", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        ProdutoEntity produto = controller.buscarPorId(id);
-        if (produto == null) {
-            System.out.println("Produto não encontrado.");
-            return;
-        }
-
-        System.out.println("\nDados atuais do produto:");
-        System.out.println("Nome: " + produto.getNome());
-        System.out.println("Descrição: " + produto.getDescricao());
-        System.out.println("Preço: R$ " + produto.getPreco());
-        System.out.println("Estoque: " + produto.getQuantidadeEstoque());
-        System.out.println("Categoria: " + produto.getCategoria());
-        System.out.println("Marca: " + produto.getMarca());
-
-        System.out.println("\nDigite os novos dados (deixe em branco para manter o valor atual):");
-
-        System.out.print("Novo Nome: ");
-        String nome = scanner.nextLine();
-        if (!nome.isBlank()) {
-            produto.setNome(nome);
-        }
-
-        System.out.print("Nova Descrição: ");
-        String descricao = scanner.nextLine();
-        if (!descricao.isBlank()) {
-            produto.setDescricao(descricao);
-        }
-
-        System.out.print("Novo Preço: ");
-        String precoStr = scanner.nextLine();
-        if (!precoStr.isBlank()) {
-            try {
-                produto.setPreco(new BigDecimal(precoStr));
-            } catch (NumberFormatException e) {
-                System.out.println("Preço inválido. Este campo não será atualizado.");
-            }
-        }
-
-        System.out.print("Nova Quantidade em Estoque: ");
-        String estoqueStr = scanner.nextLine();
-        if (!estoqueStr.isBlank()) {
-            try {
-                produto.setQuantidadeEstoque(Integer.parseInt(estoqueStr));
-            } catch (NumberFormatException e) {
-                System.out.println("Quantidade inválida. Este campo não será atualizado.");
-            }
-        }
-
-        System.out.print("Nova Categoria: ");
-        String categoria = scanner.nextLine();
-        if (!categoria.isBlank()) {
-            produto.setCategoria(categoria);
-        }
-
-        System.out.print("Nova Marca: ");
-        String marca = scanner.nextLine();
-        if (!marca.isBlank()) {
-            produto.setMarca(marca);
-        }
-
-        boolean sucesso = controller.atualizarProduto(produto);
-
-        if (sucesso) {
-            System.out.println("Produto atualizado com sucesso!");
-        } else {
-            System.out.println("Erro ao atualizar produto.");
-        }
+        EdicaoProdutoView edicaoView = new EdicaoProdutoView(this, linha);
+        edicaoView.setVisible(true);
     }
 
     private void excluirProduto() {
-        System.out.println("\n=== EXCLUSÃO DE PRODUTO ===\n");
+        int linha = produtosTable.getSelectedRow();
 
-        listarProdutos();
-
-        System.out.print("\nDigite o ID do produto que deseja excluir: ");
-        int id;
-        try {
-            id = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("ID inválido.");
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para excluir!", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        ProdutoEntity produto = controller.buscarPorId(id);
-        if (produto == null) {
-            System.out.println("Produto não encontrado.");
-            return;
+        String nome = (String) tableModel.getValueAt(linha, 1);
+
+        int opcao = JOptionPane.showConfirmDialog(this,
+                "Tem certeza que deseja excluir o produto:\n" + nome + "?",
+                "Confirmar Exclusão",
+                JOptionPane.YES_NO_OPTION);
+
+        if (opcao == JOptionPane.YES_OPTION) {
+            JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
 
-        System.out.println("\nDados do produto a ser excluído:");
-        System.out.println("Nome: " + produto.getNome());
-        System.out.println("Descrição: " + produto.getDescricao());
-        System.out.println("Preço: R$ " + produto.getPreco());
-        System.out.println("Estoque: " + produto.getQuantidadeEstoque());
+    private void carregarProdutos() {
+        Object[][] produtos = {
+                {1, "exemplo01", "categoria01", "marca01", "R$ 100,00", "10"},
+                {2, "exemplo02", "categoria02", "marca02", "R$ 200,00", "5"},
+                {3, "exemplo03", "categoria03", "marca03", "R$ 300,00", "15"},
+                {4, "exemplo04", "categoria04", "marca04", "R$ 400,00", "8"},
+                {5, "exemplo05", "categoria05", "marca05", "R$ 500,00", "20"}
+        };
 
-        System.out.print("\nTem certeza que deseja excluir este produto? (S/N): ");
-        String confirmacao = scanner.nextLine();
+        for (Object[] produto : produtos) {
+            tableModel.addRow(produto);
+        }
+    }
 
-        if (confirmacao.equalsIgnoreCase("S")) {
-            boolean sucesso = controller.excluirProduto(id);
+    public void iniciar() {
+        setVisible(true);
+    }
+}
 
-            if (sucesso) {
-                System.out.println("Produto excluído com sucesso!");
-            } else {
-                System.out.println("Erro ao excluir produto. Pode haver vendas relacionadas a este produto.");
+// Classe cadastro
+class CadastroProdutoView extends JFrame {
+    private JTextField nomeField;
+    private JTextField categoriaField;
+    private JTextField marcaField;
+    private JTextField precoField;
+    private JTextField estoqueField;
+    private JButton cadastrarButton;
+    private JButton voltarButton;
+    private ProdutoView produtoView;
+
+    public CadastroProdutoView(ProdutoView produtoView) {
+        this.produtoView = produtoView;
+        setTitle("Cadastro de Produto");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initComponents();
+    }
+
+    private void initComponents() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JLabel titleLabel = new JLabel("=== CADASTRO DE PRODUTO ===");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(titleLabel, gbc);
+
+        gbc.gridwidth = 1;
+
+        // Nome
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Nome:"), gbc);
+
+        nomeField = new JTextField(15);
+        gbc.gridx = 1;
+        panel.add(nomeField, gbc);
+
+        // Categoria
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(new JLabel("Categoria:"), gbc);
+
+        categoriaField = new JTextField(15);
+        gbc.gridx = 1;
+        panel.add(categoriaField, gbc);
+
+        // Marca
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(new JLabel("Marca:"), gbc);
+
+        marcaField = new JTextField(15);
+        gbc.gridx = 1;
+        panel.add(marcaField, gbc);
+
+        // Preço
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(new JLabel("Preço:"), gbc);
+
+        precoField = new JTextField(15);
+        gbc.gridx = 1;
+        panel.add(precoField, gbc);
+
+        // Estoque
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        panel.add(new JLabel("Estoque:"), gbc);
+
+        estoqueField = new JTextField(15);
+        gbc.gridx = 1;
+        panel.add(estoqueField, gbc);
+
+        // Botões
+        cadastrarButton = new JButton("Cadastrar");
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        panel.add(cadastrarButton, gbc);
+
+        voltarButton = new JButton("Voltar");
+        gbc.gridx = 1;
+        panel.add(voltarButton, gbc);
+
+        add(panel);
+
+        // Listeners
+        cadastrarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String nome = nomeField.getText();
+                String categoria = categoriaField.getText();
+                String marca = marcaField.getText();
+                String preco = precoField.getText();
+                String estoque = estoqueField.getText();
+
+                if (nome.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(CadastroProdutoView.this, "Nome é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                JOptionPane.showMessageDialog(CadastroProdutoView.this,
+                        "Produto cadastrado:\nNome: " + nome + "\nCategoria: " + categoria + "\nMarca: " + marca + "\nPreço: R$ " + preco + "\nEstoque: " + estoque,
+                        "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+                dispose();
             }
-        } else {
-            System.out.println("Operação cancelada.");
-        }
+        });
+
+        voltarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+    }
+}
+
+// Classe edição
+class EdicaoProdutoView extends JFrame {
+    private JTextField nomeField;
+    private JTextField categoriaField;
+    private JTextField marcaField;
+    private JTextField precoField;
+    private JTextField estoqueField;
+    private JButton salvarButton;
+    private JButton voltarButton;
+    private ProdutoView produtoView;
+    private int linha;
+
+    public EdicaoProdutoView(ProdutoView produtoView, int linha) {
+        this.produtoView = produtoView;
+        this.linha = linha;
+        setTitle("Editar Produto");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initComponents();
+    }
+
+    private void initComponents() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JLabel titleLabel = new JLabel("=== EDITAR PRODUTO ===");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(titleLabel, gbc);
+
+        gbc.gridwidth = 1;
+
+        // Campos preenchidos com dados genericoss
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Nome:"), gbc);
+
+        nomeField = new JTextField("Nome do produto", 15);
+        gbc.gridx = 1;
+        panel.add(nomeField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(new JLabel("Categoria:"), gbc);
+
+        categoriaField = new JTextField("Categoria", 15);
+        gbc.gridx = 1;
+        panel.add(categoriaField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(new JLabel("Marca:"), gbc);
+
+        marcaField = new JTextField("Marca", 15);
+        gbc.gridx = 1;
+        panel.add(marcaField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(new JLabel("Preço:"), gbc);
+
+        precoField = new JTextField("0,00", 15);
+        gbc.gridx = 1;
+        panel.add(precoField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        panel.add(new JLabel("Estoque:"), gbc);
+
+        estoqueField = new JTextField("0", 15);
+        gbc.gridx = 1;
+        panel.add(estoqueField, gbc);
+
+        // Botões
+        salvarButton = new JButton("Salvar");
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        panel.add(salvarButton, gbc);
+
+        voltarButton = new JButton("Voltar");
+        gbc.gridx = 1;
+        panel.add(voltarButton, gbc);
+
+        add(panel);
+
+        salvarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(EdicaoProdutoView.this,
+                        "Produto atualizado com sucesso!",
+                        "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            }
+        });
+
+        voltarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
     }
 }

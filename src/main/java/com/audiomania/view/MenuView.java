@@ -144,7 +144,7 @@ public class MenuView extends JFrame {
     private void abrirProdutoView() {
         ProdutoView produtoView = new ProdutoView();
         setVisible(false);
-        produtoView.iniciarGerenciamento();
+        produtoView.iniciar();
         setVisible(true);
     }
 
