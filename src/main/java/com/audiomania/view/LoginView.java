@@ -73,7 +73,19 @@
             add(panel);
 
             // Listeners
-            loginButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Login clicado!"));
+            loginButton.addActionListener(e -> {
+    // @todo: implementar autenticação real
+    String cpf = cpfField.getText();
+    String senha = new String(senhaField.getPassword());
+    if (!cpf.isEmpty() && !senha.isEmpty()) {
+        // Sucesso fictício de login
+        this.dispose();
+        MenuView menuView = new MenuView();
+        menuView.iniciar();
+    } else {
+        JOptionPane.showMessageDialog(this, "CPF e senha obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+});
 
             registrarButton.addActionListener(e -> {
                 CadastroFuncionarioView cadastroView = new CadastroFuncionarioView(this);
@@ -88,9 +100,6 @@
             setVisible(true);
         }
 
-        public static void main(String[] args) {
-            SwingUtilities.invokeLater(() -> new LoginView().iniciar());
-        }
     }
 
     // Classe auxiliar, sem public!
