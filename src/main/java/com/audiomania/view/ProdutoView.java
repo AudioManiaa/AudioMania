@@ -17,8 +17,15 @@ public class ProdutoView extends JFrame {
     private JButton fecharButton;
     private JTable produtosTable;
     private DefaultTableModel tableModel;
+    private JFrame menuView;
 
     public ProdutoView() {
+        this(null);
+    }
+
+    public ProdutoView(JFrame menuView) {
+        this.menuView = menuView;
+
         // Aplicar tema padrao
         StyleConfigurator.applyStyles();
 
@@ -118,6 +125,9 @@ public class ProdutoView extends JFrame {
         fecharButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
+                if (menuView != null) {
+                    menuView.setVisible(true);
+                }
             }
         });
     }
@@ -354,7 +364,6 @@ class EdicaoProdutoView extends JFrame {
 
         gbc.gridwidth = 1;
 
-        // Campos preenchidos com dados genericoss
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(new JLabel("Nome:"), gbc);

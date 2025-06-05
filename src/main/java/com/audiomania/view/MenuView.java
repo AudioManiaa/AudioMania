@@ -142,10 +142,9 @@ public class MenuView extends JFrame {
      * Abre a tela de gerenciamento de produtos.
      */
     private void abrirProdutoView() {
-        ProdutoView produtoView = new ProdutoView();
+        ProdutoView produtoView = new ProdutoView(this);
         setVisible(false);
         produtoView.iniciar();
-        setVisible(true);
     }
 
     /**
