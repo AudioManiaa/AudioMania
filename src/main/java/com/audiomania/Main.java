@@ -8,7 +8,6 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
-        // Aplica os estilos uma única vez
         StyleConfigurator.applyStyles();
 
         SwingUtilities.invokeLater(() -> {
