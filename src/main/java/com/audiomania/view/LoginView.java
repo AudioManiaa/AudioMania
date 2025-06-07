@@ -92,8 +92,8 @@ public class LoginView extends JFrame {
                 // IMPORTANTE: Para o código ser totalmente executável, MenuView precisa ser definida.
                 // Como não foi fornecida, comentei a linha abaixo para evitar erros de compilação.
                 // Se você tiver a classe MenuView, descomente e use-a.
-                // MenuView menuView = new MenuView();
-                // menuView.iniciar();
+                MenuView menuView = new MenuView();
+                menuView.iniciar();
                 JOptionPane.showMessageDialog(this, "Login efetuado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "CPF e senha obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
