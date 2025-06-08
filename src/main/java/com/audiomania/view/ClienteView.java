@@ -2,73 +2,129 @@ package com.audiomania.view;
 
 import com.audiomania.controller.ClienteController;
 import com.audiomania.model.entities.ClienteEntity;
+import com.audiomania.utils.StyleConfigurator;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Scanner;
 
 public class ClienteView extends JFrame {
     private final Scanner scanner;
     private final ClienteController controller;
-    private JButton listarClientesButton;
-    private JButton cadastrarClientesButton;
-    private JButton atualizarClientesButton;
-    private JButton excluirClientesButton;
-    private JButton sairButton;
+    private JTextField buscaField;
+    private JButton buscarButton;
+    private JButton novoButton;
+    private JButton editarButton;
+    private JButton excluirButton;
+    private JButton fecharButton;
+    private JTable clientesTable;
+    private DefaultTableModel tableModel;
+    private JFrame menuView;
 
     public ClienteView() {
+        this(null);
+    }
+
+    public ClienteView(JFrame menuView) {
+        this.menuView = menuView;
+
+        StyleConfigurator.applyStyles();
+
         scanner = new Scanner(System.in);
         controller = new ClienteController();
         setVisible(true);
         setTitle("Sistema Audio Mania - Gerenciamento de Clientes");
-        setSize(400, 300);
+        setSize(800, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         initComponents();
+        carregarClientes();
     }
 
     public void initComponents() {
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
+        panel.setLayout(new BorderLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        JLabel titleLabel = new JLabel("==== GERENCIAMENTO DE CLIENTES ====");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout());
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        panel.add(titleLabel, gbc);
+        JLabel titleLabel = new JLabel("GERENCIAR CLIENTES");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
-        gbc.gridwidth = 1;
+        JLabel buscaLabel = new JLabel("Buscar:");
+        buscaField = new JTextField(15);
 
-        listarClientesButton = new JButton("Listar clientes");
-        cadastrarClientesButton = new JButton("Cadastrar clientes");
-        atualizarClientesButton = new JButton("Atualizar clientes");
-        excluirClientesButton = new JButton("Excluir clientes");
+        buscarButton = new JButton("Buscar");
 
+        topPanel.add(titleLabel);
+        topPanel.add(Box.createHorizontalStrut(20));
+        topPanel.add(buscaLabel);
+        topPanel.add(buscaField);
+        topPanel.add(buscarButton);
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(listarClientesButton, gbc);
+        String[] colunas = {"ID", "Nome", "CPF", "Telefone", "Endereço", "Data de Cadastro"};
+        tableModel = new DefaultTableModel(colunas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        clientesTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(clientesTable);
 
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(cadastrarClientesButton, gbc);
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout());
 
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        panel.add(atualizarClientesButton, gbc);
+        novoButton = new JButton("Novo");
+        editarButton = new JButton("Editar");
+        excluirButton = new JButton("Excluir");
+        fecharButton = new JButton("Fechar");
 
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        panel.add(excluirClientesButton, gbc);
+        bottomPanel.add(novoButton);
+        bottomPanel.add(editarButton);
+        bottomPanel.add(excluirButton);
+        bottomPanel.add(fecharButton);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        fecharButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                if (menuView != null) {
+                    menuView.setVisible(true);
+                }
+            }
+        });
 
         add(panel);
+    }
+
+    public void carregarClientes() {
+        Object[][] clientes = {
+                {1, "cliente01", "12345678910", "45999999999", "endereço01", "01/01/01"},
+                {2, "cliente02", "14785236900", "44998000000", "endereço02", "01/01/01"},
+                {3, "cliente03", "24681357901", "45887999999", "endereço03", "01/01/01"},
+                {4, "cliente04", "78945612310", "21999999999", "endereço04", "01/01/01"},
+                {5, "cliente05", "98765432100", "11789999999", "endereço05", "01/01/01"}
+        };
+
+        for (Object[] cliente : clientes) {
+            tableModel.addRow(cliente);
+        }
+    }
+
+    public void iniciar() {
+        setVisible(true);
     }
 
     public void iniciarGerenciamento() {

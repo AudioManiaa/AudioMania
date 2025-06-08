@@ -121,10 +121,9 @@ public class MenuView extends JFrame {
      * Abre a tela de gerenciamento de clientes.
      */
     private void abrirClienteView() {
-        ClienteView clienteView = new ClienteView();
+        ClienteView clienteView = new ClienteView(this);
         setVisible(false);
-        clienteView.iniciarGerenciamento();
-        setVisible(true);
+        clienteView.iniciar();
     }
 
     /**

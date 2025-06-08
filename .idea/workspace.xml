@@ -5,20 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5fb1a765-e842-4780-a6a1-496aed357f2a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/audiomania/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/audiomania/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/META-INF/persistence.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/META-INF/persistence.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/Produto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/Produto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/ProdutoRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/ProdutoRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/controller/EstoqueController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/model/Categoria.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/model/ItemEstoque.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/model/Produto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/repository/EstoqueRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/view/EstoqueView.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/estoque/view/ProdutoView.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/audiomania/view/ClienteView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/audiomania/view/ClienteView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/audiomania/view/MenuView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/audiomania/view/MenuView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/audiomania/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/view/LoginView.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/audiomania/view/LoginView.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,18 +26,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "jotapemm"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jotapemm&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/AudioManiaa/AudioMania.git",
-    "accountId": "2451c0c7-ece0-4ae3-bb56-53d47aaf554b"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/AudioManiaa/AudioMania.git&quot;,
+    &quot;accountId&quot;: &quot;2451c0c7-ece0-4ae3-bb56-53d47aaf554b&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -55,20 +46,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "Application.TesteVenda.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Development",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Problems",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.LoginView.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TesteVenda.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ImplementacaoFrontEnd&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Problems&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -79,5 +71,16 @@
       <updated>1745535316407</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/audiomania/utils/StyleConfigurator.java</url>
+          <line>17</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
