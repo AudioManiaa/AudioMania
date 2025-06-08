@@ -1,187 +1,234 @@
 package com.audiomania.view;
 
-import java.util.List;
-import java.util.Scanner;
-import com.audiomania.controller.SistemaController;
 import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.service.FuncionarioService;
+import com.audiomania.utils.FabricaDeIcones;
 
-public class FuncionarioView {
-    private final Scanner scanner;
-    private final SistemaController controller;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.List;
+
+public class FuncionarioView extends JFrame {
+
+    private JTextField idField;
+    private JTextField nomeField;
+    private JTextField cpfField;
+    private JTextField cargoField;
+    private JTextField telefoneField;
+    private JPasswordField senhaField;
+    private JButton cadastrarButton;
+    private JButton atualizarButton;
+    private JButton excluirButton;
+    private JButton limparButton;
+    private JButton voltarButton;
+    private JTable funcionariosTable;
+    private DefaultTableModel tableModel;
+
+    // FuncionarioService contém apenas métodos estáticos, não precisa de instância.
 
     public FuncionarioView() {
-        scanner = new Scanner(System.in);
-        controller = new SistemaController();
+        // funcionarioService = new FuncionarioService(); // Não é necessário instanciar
+        initComponents();
+        listarFuncionarios();
     }
 
-    /**
-     * Inicia o menu de gerenciamento de funcionários
-     */
-    public void iniciarGerenciamento() {
-        boolean sair = false;
+    private void initComponents() {
+        setTitle("Gerenciamento de Funcionários");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Para não fechar a aplicação principal
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
 
-        while (!sair) {
-            System.out.println("\n===== GERENCIAMENTO DE FUNCIONÁRIOS =====\n");
-            System.out.println("1. Listar Funcionários");
-            System.out.println("2. Cadastrar Funcionário");
-            System.out.println("3. Atualizar Funcionário");
-            System.out.println("4. Excluir Funcionário");
-            System.out.println("0. Voltar ao Menu Principal");
-            System.out.print("\nEscolha uma opção: ");
+        // Painel de Formulário (Norte)
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-            int opcao = -1;
-            try {
-                opcao = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Opção inválida!");
-                continue;
-            }
+        // ID (não editável, apenas para exibição ao selecionar)
+        gbc.gridx = 0; gbc.gridy = 0; formPanel.add(new JLabel("ID:"), gbc);
+        idField = new JTextField(5);
+        idField.setEditable(false);
+        gbc.gridx = 1; gbc.gridy = 0; formPanel.add(idField, gbc);
 
-            switch (opcao) {
-                case 1:
-                    listarFuncionarios();
-                    break;
-                case 2:
-                    cadastrarFuncionario();
-                    break;
-                case 3:
-                    atualizarFuncionario();
-                    break;
-                case 4:
-                    excluirFuncionario();
-                    break;
-                case 0:
-                    sair = true;
-                    break;
-                default:
-                    System.out.println("Opção inválida!");
-            }
+        // Nome
+        gbc.gridx = 0; gbc.gridy = 1; formPanel.add(new JLabel("Nome:"), gbc);
+        nomeField = new JTextField(20);
+        gbc.gridx = 1; gbc.gridy = 1; gbc.gridwidth = 3; formPanel.add(nomeField, gbc);
+        gbc.gridwidth = 1; // Reset gridwidth
 
-            if (!sair) {
-                System.out.print("\nPressione ENTER para continuar...");
-                scanner.nextLine();
-            }
-        }
+        // CPF
+        gbc.gridx = 0; gbc.gridy = 2; formPanel.add(new JLabel("CPF:"), gbc);
+        cpfField = new JTextField(15);
+        gbc.gridx = 1; gbc.gridy = 2; formPanel.add(cpfField, gbc);
+
+        // Cargo
+        gbc.gridx = 2; gbc.gridy = 2; formPanel.add(new JLabel("Cargo:"), gbc);
+        cargoField = new JTextField(15);
+        gbc.gridx = 3; gbc.gridy = 2; formPanel.add(cargoField, gbc);
+
+        // Telefone
+        gbc.gridx = 0; gbc.gridy = 3; formPanel.add(new JLabel("Telefone:"), gbc);
+        telefoneField = new JTextField(15);
+        gbc.gridx = 1; gbc.gridy = 3; formPanel.add(telefoneField, gbc);
+
+        // Senha
+        gbc.gridx = 2; gbc.gridy = 3; formPanel.add(new JLabel("Senha:"), gbc);
+        senhaField = new JPasswordField(15);
+        gbc.gridx = 3; gbc.gridy = 3; formPanel.add(senhaField, gbc);
+
+        add(formPanel, BorderLayout.NORTH);
+
+        // Painel da Tabela (Centro)
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Nome", "CPF", "Cargo", "Telefone", "Admissão"}, 0);
+        funcionariosTable = new JTable(tableModel);
+        funcionariosTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        funcionariosTable.getSelectionModel().addListSelectionListener(e -> preencherCamposComSelecionado());
+        JScrollPane scrollPane = new JScrollPane(funcionariosTable);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Painel de Botões (Sul)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+        cadastrarButton = new JButton("Cadastrar", FabricaDeIcones.criarIcone("/icons/add.png", "Cadastrar", 20));
+        cadastrarButton.addActionListener(e -> cadastrarFuncionario());
+        buttonPanel.add(cadastrarButton);
+
+        atualizarButton = new JButton("Atualizar", FabricaDeIcones.criarIcone("/icons/edit.png", "Atualizar", 20));
+        atualizarButton.addActionListener(e -> atualizarFuncionario());
+        buttonPanel.add(atualizarButton);
+
+        excluirButton = new JButton("Excluir", FabricaDeIcones.criarIcone("/icons/delete.png", "Excluir", 20));
+        excluirButton.addActionListener(e -> excluirFuncionario());
+        buttonPanel.add(excluirButton);
+
+        limparButton = new JButton("Limpar", FabricaDeIcones.criarIcone("/icons/clear.png", "Limpar", 20));
+        limparButton.addActionListener(e -> limparCampos());
+        buttonPanel.add(limparButton);
+
+        voltarButton = new JButton("Voltar", FabricaDeIcones.criarIcone("/icons/back.png", "Voltar", 20));
+        voltarButton.addActionListener(e -> fecharJanela());
+        buttonPanel.add(voltarButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private void listarFuncionarios() {
-        List<FuncionarioEntity> funcionarios = controller.listarFuncionarios();
-
-        if (funcionarios.isEmpty()) {
-            System.out.println("Nenhum funcionário cadastrado.");
-            return;
-        }
-
-        System.out.println("\n=== LISTA DE FUNCIONÁRIOS ===\n");
-        System.out.printf("%-5s | %-30s | %-15s | %-20s | %-15s\n",
-                "ID", "NOME", "CPF", "CARGO", "TELEFONE");
-        System.out.println("----------------------------------------------------------------------------------------------");
-
-        for (FuncionarioEntity funcionario : funcionarios) {
-            System.out.printf("%-5d | %-30s | %-15s | %-20s | %-15s\n",
-                    funcionario.getId(),
-                    funcionario.getNome(),
-                    funcionario.getCpf(),
-                    funcionario.getCargo(),
-                    funcionario.getTelefone());
+        tableModel.setRowCount(0); // Limpa a tabela
+        List<FuncionarioEntity> funcionarios = FuncionarioService.listarTodos();
+        for (FuncionarioEntity func : funcionarios) {
+            tableModel.addRow(new Object[]{
+                    func.getId(),
+                    func.getNome(),
+                    func.getCpf(),
+                    func.getCargo(),
+                    func.getTelefone(),
+                    func.getDataAdmissao() != null ? func.getDataAdmissao().toString() : "N/A"
+            });
         }
     }
 
     private void cadastrarFuncionario() {
-        System.out.println("\n=== CADASTRO DE FUNCIONÁRIO ===\n");
+        String nome = nomeField.getText();
+        String cpf = cpfField.getText();
+        String cargo = cargoField.getText();
+        String telefone = telefoneField.getText();
+        String senha = new String(senhaField.getPassword());
 
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+        if (nome.isEmpty() || cpf.isEmpty() || cargo.isEmpty() || senha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nome, CPF, Cargo e Senha são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
-
-        System.out.print("Cargo: ");
-        String cargo = scanner.nextLine();
-
-        System.out.print("Telefone: ");
-        String telefone = scanner.nextLine();
-
-        System.out.print("Senha: ");
-        String senha = scanner.nextLine();
-
-        boolean sucesso = controller.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
-
+        boolean sucesso = FuncionarioService.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
         if (sucesso) {
-            System.out.println("Funcionário cadastrado com sucesso!");
+            JOptionPane.showMessageDialog(this, "Funcionário cadastrado com sucesso!");
+            listarFuncionarios();
+            limparCampos();
         } else {
-            System.out.println("Erro ao cadastrar funcionário. CPF já existe ou ocorreu um problema no banco de dados.");
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar funcionário. Verifique se o CPF já existe.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void atualizarFuncionario() {
-        System.out.println("\n=== ATUALIZAÇÃO DE FUNCIONÁRIO ===\n");
+        if (idField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecione um funcionário na tabela para atualizar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Integer id = Integer.parseInt(idField.getText());
+        String nome = nomeField.getText();
+        String cargo = cargoField.getText();
+        String telefone = telefoneField.getText();
+        String senha = new String(senhaField.getPassword());
 
-        // Listar funcionários para referência
-        listarFuncionarios();
-
-        System.out.print("\nDigite o ID do funcionário que deseja atualizar: ");
-        int id;
-        try {
-            id = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("ID inválido.");
+        if (nome.isEmpty() || cargo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nome e Cargo são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+        // Se o campo senha estiver vazio, não atualiza a senha (passa null ou string vazia para o service)
+        String senhaParaAtualizar = senha.isEmpty() ? null : senha;
 
-        System.out.print("Cargo: ");
-        String cargo = scanner.nextLine();
-
-        System.out.print("Telefone: ");
-        String telefone = scanner.nextLine();
-
-        System.out.print("Nova senha (deixe em branco para manter a atual): ");
-        String senha = scanner.nextLine();
-
-        boolean sucesso = controller.atualizarFuncionario(id, nome, cargo, telefone, senha);
-
+        boolean sucesso = FuncionarioService.atualizarFuncionario(id, nome, cargo, telefone, senhaParaAtualizar);
         if (sucesso) {
-            System.out.println("Funcionário atualizado com sucesso!");
+            JOptionPane.showMessageDialog(this, "Funcionário atualizado com sucesso!");
+            listarFuncionarios();
+            limparCampos();
         } else {
-            System.out.println("Erro ao atualizar funcionário. ID não encontrado ou ocorreu um problema no banco de dados.");
+            JOptionPane.showMessageDialog(this, "Erro ao atualizar funcionário.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void excluirFuncionario() {
-        System.out.println("\n=== EXCLUSÃO DE FUNCIONÁRIO ===\n");
-
-        // Listar funcionários para referência
-        listarFuncionarios();
-
-        System.out.print("\nDigite o ID do funcionário que deseja excluir: ");
-        int id;
-        try {
-            id = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("ID inválido.");
+        if (idField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecione um funcionário na tabela para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        Integer id = Integer.parseInt(idField.getText());
 
-        System.out.print("Tem certeza que deseja excluir este funcionário? (S/N): ");
-        String confirmacao = scanner.nextLine();
-
-        if (confirmacao.equalsIgnoreCase("S")) {
-            boolean sucesso = controller.excluirFuncionario(id);
-
+        int confirmacao = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este funcionário?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            boolean sucesso = FuncionarioService.excluirFuncionario(id);
             if (sucesso) {
-                System.out.println("Funcionário excluído com sucesso!");
+                JOptionPane.showMessageDialog(this, "Funcionário excluído com sucesso!");
+                listarFuncionarios();
+                limparCampos();
             } else {
-                System.out.println("Erro ao excluir funcionário. ID não encontrado ou ocorreu um problema no banco de dados.");
+                JOptionPane.showMessageDialog(this, "Erro ao excluir funcionário.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            System.out.println("Operação cancelada.");
         }
     }
 
-    public void fechar() {
-        scanner.close();
+    private void preencherCamposComSelecionado() {
+        int selectedRow = funcionariosTable.getSelectedRow();
+        if (selectedRow != -1) {
+            idField.setText(tableModel.getValueAt(selectedRow, 0).toString());
+            nomeField.setText(tableModel.getValueAt(selectedRow, 1).toString());
+            cpfField.setText(tableModel.getValueAt(selectedRow, 2).toString());
+            cargoField.setText(tableModel.getValueAt(selectedRow, 3).toString());
+            telefoneField.setText(tableModel.getValueAt(selectedRow, 4) != null ? tableModel.getValueAt(selectedRow, 4).toString() : "");
+            senhaField.setText(""); // Limpa o campo senha por segurança
+        }
+    }
+
+    private void limparCampos() {
+        idField.setText("");
+        nomeField.setText("");
+        cpfField.setText("");
+        cargoField.setText("");
+        telefoneField.setText("");
+        senhaField.setText("");
+        funcionariosTable.clearSelection();
+    }
+
+    private void fecharJanela() {
+        dispose(); // Fecha apenas esta janela
+    }
+
+    public void iniciarGerenciamento() {
+        // Torna a janela visível. O construtor já inicializa os componentes.
+        setVisible(true);
     }
 }
