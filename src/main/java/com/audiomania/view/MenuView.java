@@ -6,12 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.audiomania.utils.FabricaDeIcones;
+import com.audiomania.model.entities.FuncionarioEntity;
 
 /**
  * MenuView exibe o menu principal da aplicação, permitindo acesso ao gerenciamento de clientes,
  * funcionários, produtos, vendas e histórico. Implementado em Swing para interface gráfica.
  */
 public class MenuView extends JFrame {
+    private FuncionarioEntity funcionarioLogado;
     private JButton clientesButton;
     private JButton funcionariosButton;
     private JButton produtosButton;
@@ -22,12 +24,22 @@ public class MenuView extends JFrame {
     /**
      * Construtor do menu principal. Inicializa componentes e listeners.
      */
-    public MenuView() {
-        setTitle("Menu Principal - Audio Mania");
+    public MenuView(FuncionarioEntity funcionario) {
+        this.funcionarioLogado = funcionario;
+        if (funcionario != null && funcionario.getNome() != null && !funcionario.getNome().isEmpty()) {
+            setTitle("Menu Principal - Audio Mania (Usuário: " + funcionario.getNome() + ")");
+        } else {
+            setTitle("Menu Principal - Audio Mania"); // Título padrão se não houver funcionário
+        }
         setSize(600, 800); // Aumentei a altura para mais espaçamento
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        initComponents();
+        initComponents(); // ESSENCIAL para construir a UI
+    }
+
+    // Construtor padrão agora chama o construtor principal com null
+    public MenuView() {
+        this(null); 
     }
 
     /**

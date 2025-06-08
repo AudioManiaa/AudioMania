@@ -131,10 +131,10 @@ public class FuncionarioView extends JFrame {
     }
 
     private void cadastrarFuncionario() {
-        String nome = nomeField.getText();
-        String cpf = cpfField.getText();
-        String cargo = cargoField.getText();
-        String telefone = telefoneField.getText();
+        String nome = nomeField.getText().trim();
+        String cpf = cpfField.getText().trim();
+        String cargo = cargoField.getText().trim();
+        String telefone = telefoneField.getText().trim();
         String senha = new String(senhaField.getPassword());
 
         if (nome.isEmpty() || cpf.isEmpty() || cargo.isEmpty() || senha.isEmpty()) {
@@ -142,13 +142,27 @@ public class FuncionarioView extends JFrame {
             return;
         }
 
-        boolean sucesso = FuncionarioService.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
+        // Validação do CPF para 11 dígitos numéricos
+        if (!cpf.matches("\\d{11}")) {
+            JOptionPane.showMessageDialog(this, "O CPF deve conter exatamente 11 dígitos numéricos.", "Erro de Validação do CPF", JOptionPane.ERROR_MESSAGE);
+            cpfField.requestFocus(); // Foca no campo CPF para correção
+            return;
+        }
+
+        FuncionarioEntity novoFuncionario = new FuncionarioEntity();
+        novoFuncionario.setNome(nome);
+        novoFuncionario.setCpf(cpf);
+        novoFuncionario.setCargo(cargo);
+        novoFuncionario.setTelefone(telefone);
+        novoFuncionario.setSenha(senha); // A senha será tratada (ex: hashed) pelo serviço, se necessário
+
+        boolean sucesso = FuncionarioService.cadastrarFuncionario(novoFuncionario);
         if (sucesso) {
             JOptionPane.showMessageDialog(this, "Funcionário cadastrado com sucesso!");
             listarFuncionarios();
             limparCampos();
         } else {
-            JOptionPane.showMessageDialog(this, "Erro ao cadastrar funcionário. Verifique se o CPF já existe.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar funcionário. Verifique se o CPF já existe ou se os dados são válidos.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -158,26 +172,35 @@ public class FuncionarioView extends JFrame {
             return;
         }
         Integer id = Integer.parseInt(idField.getText());
-        String nome = nomeField.getText();
-        String cargo = cargoField.getText();
-        String telefone = telefoneField.getText();
+        String nome = nomeField.getText().trim();
+        String cpf = cpfField.getText().trim(); // Adicionado para validação
+        String cargo = cargoField.getText().trim();
+        String telefone = telefoneField.getText().trim();
         String senha = new String(senhaField.getPassword());
 
         if (nome.isEmpty() || cargo.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nome e Cargo são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            nomeField.requestFocus(); // Foca no primeiro campo problemático
+            return;
+        }
+
+        // Validação do CPF para 11 dígitos numéricos
+        if (!cpf.matches("\\d{11}")) {
+            JOptionPane.showMessageDialog(this, "O CPF deve conter exatamente 11 dígitos numéricos.", "Erro de Validação do CPF", JOptionPane.ERROR_MESSAGE);
+            cpfField.requestFocus(); // Foca no campo CPF para correção
             return;
         }
 
         // Se o campo senha estiver vazio, não atualiza a senha (passa null ou string vazia para o service)
         String senhaParaAtualizar = senha.isEmpty() ? null : senha;
 
-        boolean sucesso = FuncionarioService.atualizarFuncionario(id, nome, cargo, telefone, senhaParaAtualizar);
+        boolean sucesso = FuncionarioService.atualizarFuncionario(id, nome, cpf, cargo, telefone, senhaParaAtualizar);
         if (sucesso) {
             JOptionPane.showMessageDialog(this, "Funcionário atualizado com sucesso!");
             listarFuncionarios();
             limparCampos();
         } else {
-            JOptionPane.showMessageDialog(this, "Erro ao atualizar funcionário.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao atualizar funcionário. Verifique os dados e tente novamente.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 

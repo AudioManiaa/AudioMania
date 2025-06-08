@@ -27,7 +27,13 @@ public class SistemaController {
      */
     public boolean cadastrarFuncionario(String nome, String cpf, String cargo,
                                         String telefone, String senha) {
-        return FuncionarioService.cadastrarFuncionario(nome, cpf, cargo, telefone, senha);
+        FuncionarioEntity novoFuncionario = new FuncionarioEntity();
+        novoFuncionario.setNome(nome);
+        novoFuncionario.setCpf(cpf);
+        novoFuncionario.setCargo(cargo);
+        novoFuncionario.setTelefone(telefone);
+        novoFuncionario.setSenha(senha);
+        return FuncionarioService.cadastrarFuncionario(novoFuncionario);
     }
 
     /**
@@ -42,14 +48,15 @@ public class SistemaController {
      * Atualiza os dados de um funcionário
      * @param id ID do funcionário
      * @param nome Novo nome
+     * @param cpf Novo CPF
      * @param cargo Novo cargo
      * @param telefone Novo telefone
      * @param senha Nova senha (opcional)
      * @return true se atualizado com sucesso, false caso contrário
      */
-    public boolean atualizarFuncionario(Integer id, String nome, String cargo,
+    public boolean atualizarFuncionario(Integer id, String nome, String cpf, String cargo,
                                         String telefone, String senha) {
-        return FuncionarioService.atualizarFuncionario(id, nome, cargo, telefone, senha);
+        return FuncionarioService.atualizarFuncionario(id, nome, cpf, cargo, telefone, senha);
     }
 
     /**

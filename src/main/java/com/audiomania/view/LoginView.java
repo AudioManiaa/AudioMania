@@ -3,6 +3,8 @@ package com.audiomania.view;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.EmptyBorder; // Importar EmptyBorder
+import com.audiomania.model.entities.FuncionarioEntity;
+import com.audiomania.model.service.FuncionarioService;
 
 public class LoginView extends JFrame {
     private JTextField cpfField;
@@ -83,20 +85,35 @@ public class LoginView extends JFrame {
 
         // Listeners (mantidos como estavam)
         loginButton.addActionListener(e -> {
-            String cpf = cpfField.getText();
+            String cpf = cpfField.getText().trim();
             String senha = new String(senhaField.getPassword());
-            if (!cpf.isEmpty() && !senha.isEmpty()) {
-                // Sucesso fictício de login
+
+            if (cpf.isEmpty() || senha.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "CPF e senha são obrigatórios!", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                if (cpf.isEmpty()) {
+                    cpfField.requestFocus();
+                } else {
+                    senhaField.requestFocus();
+                }
+                return;
+            }
+
+            if (!cpf.matches("\\d{11}")) {
+                JOptionPane.showMessageDialog(this, "O CPF deve conter exatamente 11 dígitos numéricos.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                cpfField.requestFocus();
+                return;
+            }
+
+            FuncionarioEntity funcionario = FuncionarioService.autenticar(cpf, senha);
+
+            if (funcionario != null) {
+                JOptionPane.showMessageDialog(this, "Login efetuado com sucesso! Bem-vindo, " + funcionario.getNome() + "!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
-                // Assumindo que MenuView e seu método iniciar() existem
-                // IMPORTANTE: Para o código ser totalmente executável, MenuView precisa ser definida.
-                // Como não foi fornecida, comentei a linha abaixo para evitar erros de compilação.
-                // Se você tiver a classe MenuView, descomente e use-a.
-                MenuView menuView = new MenuView();
+                MenuView menuView = new MenuView(funcionario); // Passa o funcionário logado para o MenuView
                 menuView.iniciar();
-                JOptionPane.showMessageDialog(this, "Login efetuado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "CPF e senha obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "CPF ou senha inválidos!", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                cpfField.requestFocus();
             }
         });
 
@@ -213,18 +230,48 @@ class CadastroFuncionarioView extends JFrame {
 
         // Listener cadastrar
         cadastrarButton.addActionListener(e -> {
-            String nome = nomeField.getText();
-            String cpf = cpfField.getText();
-            String cargo = cargoField.getText();
-            String telefone = telefoneField.getText();
+            String nome = nomeField.getText().trim();
+            String cpf = cpfField.getText().trim();
+            String cargo = cargoField.getText().trim();
+            String telefone = telefoneField.getText().trim();
             String senha = new String(senhaField.getPassword());
 
             if (nome.isEmpty() || cpf.isEmpty() || cargo.isEmpty() || telefone.isEmpty() || senha.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
-            } else {
+                if (nome.isEmpty()) nomeField.requestFocus();
+                else if (cpf.isEmpty()) cpfField.requestFocus();
+                else if (cargo.isEmpty()) cargoField.requestFocus();
+                else if (telefone.isEmpty()) telefoneField.requestFocus();
+                else senhaField.requestFocus();
+                return;
+            }
+
+            if (!cpf.matches("\\d{11}")) {
+                JOptionPane.showMessageDialog(this, "O CPF deve conter exatamente 11 dígitos numéricos.", "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
+                cpfField.requestFocus();
+                return;
+            }
+            
+            // Verificar se o telefone contém apenas números e tem um tamanho razoável (ex: 10 a 11 dígitos)
+            if (!telefone.matches("\\d{10,11}")) {
+                JOptionPane.showMessageDialog(this, "O telefone deve conter entre 10 e 11 dígitos numéricos.", "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
+                telefoneField.requestFocus();
+                return;
+            }
+
+            FuncionarioEntity novoFuncionario = new FuncionarioEntity();
+            novoFuncionario.setNome(nome);
+            novoFuncionario.setCpf(cpf);
+            novoFuncionario.setCargo(cargo);
+            novoFuncionario.setTelefone(telefone);
+            novoFuncionario.setSenha(senha); // A senha será hashed pelo service
+
+            boolean sucesso = FuncionarioService.cadastrarFuncionario(novoFuncionario);
+
+            if (sucesso) {
                 JOptionPane.showMessageDialog(this,
-                        "Nome: " + nome + "\nCPF: " + cpf + "\nCargo: " + cargo + "\nTelefone: " + telefone + "\nSenha: " + senha,
-                        "Dados Cadastrados",
+                        "Funcionário " + nome + " cadastrado com sucesso!",
+                        "Cadastro Realizado",
                         JOptionPane.INFORMATION_MESSAGE);
                 // Limpar campos após o cadastro
                 nomeField.setText("");
@@ -232,6 +279,12 @@ class CadastroFuncionarioView extends JFrame {
                 cargoField.setText("");
                 telefoneField.setText("");
                 senhaField.setText("");
+                // Opcional: fechar a janela de cadastro e voltar para login
+                // this.dispose();
+                // loginView.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao cadastrar funcionário. Verifique se o CPF já existe ou se os dados são válidos.", "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
+                cpfField.requestFocus();
             }
         });
 
