@@ -158,10 +158,8 @@ public class MenuView extends JFrame {
      * Abre a tela de histórico.
      */
     private void abrirHistoricoView() {
-        HistoricoView historicoView = new HistoricoView();
-        setVisible(false);
-        //historicoView.iniciar();
-        setVisible(true);
+        HistoricoView historicoView = new HistoricoView(this);
+        historicoView.iniciar();
     }
 
     /**

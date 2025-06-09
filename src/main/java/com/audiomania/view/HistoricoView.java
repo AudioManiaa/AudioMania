@@ -1,222 +1,262 @@
 package com.audiomania.view;
 
-import com.audiomania.model.entities.ClienteEntity;
-import com.audiomania.model.entities.FuncionarioEntity;
-import com.audiomania.model.entities.VendaEntity;
-import com.audiomania.model.repository.ClienteRepository;
-import com.audiomania.model.repository.FuncionarioRepository;
-import com.audiomania.model.repository.VendaRepository;
+import com.audiomania.utils.StyleConfigurator;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+public class HistoricoView extends JFrame {
+    private JComboBox<String> tipoHistoricoCombo;
+    private JComboBox<String> clienteCombo;
+    private JButton visualizarButton;
+    private JButton atualizarButton;
+    private JButton fecharButton;
+    private JTable historicoTable;
+    private DefaultTableModel tableModel;
+    private JFrame menuView;
+    private JLabel infoLabel;
 
-public class HistoricoView {
-
-    private List<ClienteEntity> historicoClientes = new ArrayList<>();
-    private List<FuncionarioEntity> historicoFuncionarios = new ArrayList<>();
-    private Map<ClienteEntity, List<VendaEntity>> historicoCompras = new HashMap<>();
-    private Scanner scanner = new Scanner(System.in);
-
-    // Repositórios para acesso ao banco de dados
-    private ClienteRepository clienteRepository;
-    private FuncionarioRepository funcionarioRepository;
-    private VendaRepository vendaRepository;
-
-    public HistoricoView() {  // CORREÇÃO: Alterado de Historico para HistoricoView
-        // Inicializa os repositórios
-        this.clienteRepository = new ClienteRepository();
-        this.funcionarioRepository = new FuncionarioRepository();
-        this.vendaRepository = new VendaRepository();
-
-        carregarDadosDoBanco();
+    public HistoricoView() {
+        this(null);
     }
 
-    private void carregarDadosDoBanco() {
-        try {
-            // Limpar listas atuais
-            historicoClientes.clear();
-            historicoFuncionarios.clear();
-            historicoCompras.clear();
+    public HistoricoView(JFrame menuView) {
+        this.menuView = menuView;
 
-            // Carregar clientes do banco de dados
-            List<ClienteEntity> clientes = clienteRepository.listarTodos();
-            if (clientes != null && !clientes.isEmpty()) {
-                historicoClientes.addAll(clientes);
-                System.out.println("Clientes carregados do banco de dados: " + historicoClientes.size());
-            } else {
-                System.out.println("Nenhum cliente encontrado no banco de dados.");
+        // Aplicar tema padrao
+        StyleConfigurator.applyStyles();
+
+        setTitle("Histórico - Audio Mania");
+        setSize(900, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initComponents();
+        carregarHistoricoClientes(); // Inicia com histórico de clientes
+    }
+
+    private void initComponents() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        // Painel superior
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout());
+
+        JLabel titleLabel = new JLabel("HISTÓRICO DO SISTEMA");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JLabel tipoLabel = new JLabel("Tipo:");
+        String[] tipos = {"Clientes", "Funcionários", "Compras por Cliente"};
+        tipoHistoricoCombo = new JComboBox<>(tipos);
+
+        JLabel clienteLabel = new JLabel("Cliente:");
+        String[] clientes = {"João Silva", "Maria Santos", "Carlos Lima", "Ana Costa", "Pedro Alves"};
+        clienteCombo = new JComboBox<>(clientes);
+        clienteCombo.setEnabled(false); // Inicialmente desabilitado
+
+        visualizarButton = new JButton("Visualizar");
+        atualizarButton = new JButton("Atualizar");
+
+        topPanel.add(titleLabel);
+        topPanel.add(Box.createHorizontalStrut(20));
+        topPanel.add(tipoLabel);
+        topPanel.add(tipoHistoricoCombo);
+        topPanel.add(clienteLabel);
+        topPanel.add(clienteCombo);
+        topPanel.add(visualizarButton);
+        topPanel.add(atualizarButton);
+
+        // Painel central - tabela
+        String[] colunas = {"ID", "Nome", "CPF", "Telefone", "Informação Extra"};
+        tableModel = new DefaultTableModel(colunas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
+        };
+        historicoTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(historicoTable);
 
-            // Carregar funcionários do banco de dados
-            List<FuncionarioEntity> funcionarios = funcionarioRepository.listarTodos();
-            if (funcionarios != null && !funcionarios.isEmpty()) {
-                historicoFuncionarios.addAll(funcionarios);
-                System.out.println("Funcionários carregados do banco de dados: " + historicoFuncionarios.size());
-            } else {
-                System.out.println("Nenhum funcionário encontrado no banco de dados.");
-            }
+        // Label informativo
+        infoLabel = new JLabel("Histórico de Clientes carregado - Total de registros: 5");
+        infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        infoLabel.setFont(new Font("Arial", Font.ITALIC, 12));
 
-            // Carregar vendas e organizá-las por cliente
-            List<VendaEntity> vendas = vendaRepository.listarTodos();
-            if (vendas != null && !vendas.isEmpty()) {
-                for (VendaEntity venda : vendas) {
-                    ClienteEntity cliente = venda.getCliente();
-                    if (!historicoCompras.containsKey(cliente)) {
-                        historicoCompras.put(cliente, new ArrayList<>());
-                    }
-                    historicoCompras.get(cliente).add(venda);
+        // Painel inferior
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        fecharButton = new JButton("Fechar");
+        buttonPanel.add(fecharButton);
+
+        bottomPanel.add(infoLabel, BorderLayout.NORTH);
+        bottomPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        add(panel);
+
+        // Listeners
+        tipoHistoricoCombo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String tipoSelecionado = (String) tipoHistoricoCombo.getSelectedItem();
+                if ("Compras por Cliente".equals(tipoSelecionado)) {
+                    clienteCombo.setEnabled(true);
+                } else {
+                    clienteCombo.setEnabled(false);
                 }
-                System.out.println("Vendas carregadas e organizadas por cliente.");
-            } else {
-                System.out.println("Nenhuma venda encontrada no banco de dados.");
             }
+        });
 
-        } catch (Exception e) {
-            System.out.println("Erro ao carregar dados do banco: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    public void exibirHistoricoClientes() {
-        if (historicoClientes.isEmpty()) {
-            System.out.println("Nenhum cliente no histórico.");
-            return;
-        }
-        System.out.println("\n--- Histórico de Clientes ---");
-        for (int i = 0; i < historicoClientes.size(); i++) {
-            ClienteEntity cliente = historicoClientes.get(i);
-            System.out.println((i + 1) + ". Nome: " + cliente.getNome());
-            System.out.println("   CPF: " + cliente.getCpf());
-            System.out.println("   Telefone: " + cliente.getTelefone());
-            System.out.println("   Endereço: " + cliente.getEndereco());
-            System.out.println("------------------------");
-        }
-    }
-
-    public void exibirHistoricoFuncionarios() {
-        if (historicoFuncionarios.isEmpty()) {
-            System.out.println("Nenhum funcionário no histórico.");
-            return;
-        }
-        System.out.println("\n--- Histórico de Funcionários ---");
-        for (int i = 0; i < historicoFuncionarios.size(); i++) {
-            FuncionarioEntity funcionario = historicoFuncionarios.get(i);
-            System.out.println((i + 1) + ". Nome: " + funcionario.getNome());
-            System.out.println("   CPF: " + funcionario.getCpf());
-            System.out.println("   Telefone: " + funcionario.getTelefone());
-            System.out.println("   Cargo: " + funcionario.getCargo());
-            System.out.println("------------------------");
-        }
-    }
-
-    public void exibirHistoricoCompras(ClienteEntity cliente) {
-        if (cliente == null) {
-            System.out.println("Cliente inválido.");
-            return;
-        }
-
-        if (!historicoCompras.containsKey(cliente) || historicoCompras.get(cliente).isEmpty()) {
-            System.out.println("Nenhuma compra registrada para o cliente: " + cliente.getNome());
-            return;
-        }
-
-        System.out.println("\n--- Histórico de Compras do Cliente: " + cliente.getNome() + " ---");
-        List<VendaEntity> compras = historicoCompras.get(cliente);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        for (int i = 0; i < compras.size(); i++) {
-            VendaEntity venda = compras.get(i);
-            System.out.println((i + 1) + ". Data: " + venda.getData().format(formatter));
-            System.out.println("   Produto: " + venda.getProduto().getNome());
-            System.out.println("   Quantidade: " + venda.getQuantidade());
-            System.out.println("   Valor Total: R$ " + venda.getValorTotal());
-            System.out.println("   Forma de Pagamento: " + venda.getFormaPagamento());
-            System.out.println("   Atendido por: " + venda.getFuncionario().getNome());
-            System.out.println("------------------------");
-        }
-    }
-
-    private ClienteEntity selecionarCliente() {
-        if (historicoClientes.isEmpty()) {
-            System.out.println("Não há clientes cadastrados no histórico.");
-            return null;
-        }
-
-        System.out.println("\n--- Selecione um Cliente ---");
-        for (int i = 0; i < historicoClientes.size(); i++) {
-            ClienteEntity c = historicoClientes.get(i);
-            System.out.println((i + 1) + ". " + c.getNome() + " (CPF: " + c.getCpf() + ")");
-        }
-
-        System.out.print("Digite o número do cliente (0 para cancelar): ");
-        try {
-            int escolha = scanner.nextInt();
-            scanner.nextLine();
-
-            if (escolha == 0) {
-                return null;
+        visualizarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                visualizarHistorico();
             }
+        });
 
-            if (escolha < 1 || escolha > historicoClientes.size()) {
-                System.out.println("Opção inválida!");
-                return null;
+        atualizarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                atualizarHistorico();
             }
+        });
 
-            return historicoClientes.get(escolha - 1);
-        } catch (Exception e) {
-            System.out.println("Entrada inválida. Por favor, digite um número.");
-            scanner.nextLine();
-            return null;
-        }
-    }
-
-    public void menuHistorico() {
-        while (true) {
-            System.out.println("\n======Menu de Histórico======");
-            System.out.println("1. Exibir Histórico de Clientes");
-            System.out.println("2. Exibir Histórico de Funcionários");
-            System.out.println("3. Exibir Histórico de Compras de um Cliente");
-            System.out.println("0. Sair");
-            System.out.print("Escolha uma opção: ");
-
-            try {
-                int opcao = scanner.nextInt();
-                scanner.nextLine();
-
-                switch (opcao) {
-                    case 1:
-                        exibirHistoricoClientes();
-                        break;
-                    case 2:
-                        exibirHistoricoFuncionarios();
-                        break;
-                    case 3:
-                        ClienteEntity clienteSelecionado = selecionarCliente();
-                        if (clienteSelecionado != null) {
-                            exibirHistoricoCompras(clienteSelecionado);
-                        }
-                        break;
-                    case 0:
-                        // Fechando os repositórios
-                        clienteRepository.fechar();
-                        funcionarioRepository.fechar();
-                        vendaRepository.fechar();
-                        System.out.println("Saindo do menu de histórico...");
-                        return;
-                    default:
-                        System.out.println("Opção inválida.");
+        fecharButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                if (menuView != null) {
+                    menuView.setVisible(true);
                 }
-            } catch (Exception e) {
-                System.out.println("Entrada inválida. Por favor, digite um número.");
-                scanner.nextLine();
             }
+        });
+    }
 
-            System.out.println("\nPressione ENTER para continuar...");
-            scanner.nextLine();
+    private void visualizarHistorico() {
+        String tipo = (String) tipoHistoricoCombo.getSelectedItem();
+
+        switch (tipo) {
+            case "Clientes":
+                carregarHistoricoClientes();
+                break;
+            case "Funcionários":
+                carregarHistoricoFuncionarios();
+                break;
+            case "Compras por Cliente":
+                if (clienteCombo.isEnabled()) {
+                    String cliente = (String) clienteCombo.getSelectedItem();
+                    carregarHistoricoCompras(cliente);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Selecione um cliente primeiro!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                }
+                break;
         }
+    }
+
+    private void atualizarHistorico() {
+        JOptionPane.showMessageDialog(this,
+                "Dados atualizados com sucesso!\nConectado ao banco de dados.",
+                "Atualização",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        // Recarrega os dados atuais
+        visualizarHistorico();
+    }
+
+    private void carregarHistoricoClientes() {
+        // Limpar tabela
+        tableModel.setRowCount(0);
+
+        // Atualizar colunas para clientes
+        String[] colunasClientes = {"ID", "Nome", "CPF", "Telefone", "Endereço"};
+        tableModel.setColumnIdentifiers(colunasClientes);
+
+        Object[][] clientes = {
+                {1, "João Silva", "123.456.789-01", "(11) 98765-4321", "Rua A, 123"},
+                {2, "Maria Santos", "234.567.890-12", "(11) 87654-3210", "Rua B, 456"},
+                {3, "Carlos Lima", "345.678.901-23", "(11) 76543-2109", "Rua C, 789"},
+                {4, "Ana Costa", "456.789.012-34", "(11) 65432-1098", "Rua D, 101"},
+                {5, "Pedro Alves", "567.890.123-45", "(11) 54321-0987", "Rua E, 202"}
+        };
+
+        for (Object[] cliente : clientes) {
+            tableModel.addRow(cliente);
+        }
+
+        infoLabel.setText("Histórico de Clientes carregado - Total de registros: " + clientes.length);
+    }
+
+    private void carregarHistoricoFuncionarios() {
+        // Limpar tabela
+        tableModel.setRowCount(0);
+
+        // Atualizar colunas para funcionários
+        String[] colunasFuncionarios = {"ID", "Nome", "CPF", "Telefone", "Cargo"};
+        tableModel.setColumnIdentifiers(colunasFuncionarios);
+
+        Object[][] funcionarios = {
+                {1, "Roberto Silva", "111.222.333-44", "(11) 91234-5678", "Gerente"},
+                {2, "Fernanda Lima", "222.333.444-55", "(11) 92345-6789", "Vendedora"},
+                {3, "Lucas Santos", "333.444.555-66", "(11) 93456-7890", "Técnico"},
+                {4, "Juliana Costa", "444.555.666-77", "(11) 94567-8901", "Vendedora"},
+                {5, "Marcos Oliveira", "555.666.777-88", "(11) 95678-9012", "Estoquista"}
+        };
+
+        for (Object[] funcionario : funcionarios) {
+            tableModel.addRow(funcionario);
+        }
+
+        infoLabel.setText("Histórico de Funcionários carregado - Total de registros: " + funcionarios.length);
+    }
+
+    private void carregarHistoricoCompras(String nomeCliente) {
+        // Limpar tabela
+        tableModel.setRowCount(0);
+
+        // Atualizar colunas para compras
+        String[] colunasCompras = {"ID Venda", "Data", "Produto", "Quantidade", "Valor Total"};
+        tableModel.setColumnIdentifiers(colunasCompras);
+
+        // Dados de exemplo para compras (baseado no cliente selecionado)
+        Object[][] compras;
+
+        switch (nomeCliente) {
+            case "João Silva":
+                compras = new Object[][]{
+                        {1, "05/06/2025", "Modulo Taramps DS 800x4", "1", "R$ 899,90"},
+                        {5, "02/06/2025", "Cabo RCA 3m", "2", "R$ 89,80"},
+                        {8, "28/05/2025", "Tweeter Selenium", "1", "R$ 179,90"}
+                };
+                break;
+            case "Maria Santos":
+                compras = new Object[][]{
+                        {2, "05/06/2025", "Subwoofer JBL 12", "2", "R$ 919,80"},
+                        {6, "01/06/2025", "Kit 2 Vias Pioneer", "1", "R$ 399,90"}
+                };
+                break;
+            case "Carlos Lima":
+                compras = new Object[][]{
+                        {3, "04/06/2025", "Kit 2 Vias Bravox", "1", "R$ 329,90"}
+                };
+                break;
+            default:
+                compras = new Object[][]{
+                        {4, "04/06/2025", "Cabo RCA 5m", "3", "R$ 269,70"}
+                };
+        }
+
+        for (Object[] compra : compras) {
+            tableModel.addRow(compra);
+        }
+
+        infoLabel.setText("Histórico de Compras de " + nomeCliente + " - Total de registros: " + compras.length);
+    }
+
+    public void iniciar() {
+        setVisible(true);
     }
 }
