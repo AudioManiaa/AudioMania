@@ -149,10 +149,9 @@ public class MenuView extends JFrame {
      * Abre a tela de gerenciamento de vendas.
      */
     private void abrirVendaView() {
-        VendaView vendaView = new VendaView(null);
+        VendaView vendaView = new VendaView(this);
         setVisible(false);
-        vendaView.iniciarGerenciamento();
-        setVisible(true);
+        vendaView.iniciar();
     }
 
     /**
