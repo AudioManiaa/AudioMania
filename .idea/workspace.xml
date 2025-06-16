@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5fb1a765-e842-4780-a6a1-496aed357f2a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/audiomania/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/audiomania/controller/ClienteController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/audiomania/view/ClienteView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/audiomania/view/ClienteView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/controller/SistemaController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/audiomania/controller/SistemaController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/audiomania/view/LoginView.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/audiomania/view/LoginView.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
