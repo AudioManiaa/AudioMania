@@ -1,11 +1,14 @@
 package com.audiomania.view;
 
+import com.audiomania.controller.ProdutoController;
+import com.audiomania.model.entities.ProdutoEntity;
 import com.audiomania.utils.StyleConfigurator;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class ProdutoView extends JFrame {
     private JTextField buscaField;
@@ -15,9 +18,11 @@ public class ProdutoView extends JFrame {
     private JButton editarButton;
     private JButton excluirButton;
     private JButton fecharButton;
+    private JButton recarregarButton;
     private JTable produtosTable;
     private DefaultTableModel tableModel;
     private JFrame menuView;
+    private ProdutoController controller;
 
     public ProdutoView() {
         this(null);
@@ -25,17 +30,17 @@ public class ProdutoView extends JFrame {
 
     public ProdutoView(JFrame menuView) {
         this.menuView = menuView;
+        this.controller = new ProdutoController();
 
-        // Aplicar tema padrao
         StyleConfigurator.applyStyles();
 
         setTitle("Gerenciar Produtos - Audio Mania");
-        setSize(800, 500);
+        setSize(900, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         initComponents();
-        carregarProdutos();
+        carregarDados();
     }
 
     private void initComponents() {
@@ -53,10 +58,10 @@ public class ProdutoView extends JFrame {
         buscaField = new JTextField(15);
 
         JLabel categoriaLabel = new JLabel("Categoria:");
-        String[] categorias = {"Exemplo", "Exemplo01", "Exemplo02", "Exemplo03", "Exemplo04"};
-        categoriaCombo = new JComboBox<>(categorias);
+        categoriaCombo = new JComboBox<>();
 
         buscarButton = new JButton("Buscar");
+        recarregarButton = new JButton("Recarregar");
 
         topPanel.add(titleLabel);
         topPanel.add(Box.createHorizontalStrut(20));
@@ -65,9 +70,10 @@ public class ProdutoView extends JFrame {
         topPanel.add(categoriaLabel);
         topPanel.add(categoriaCombo);
         topPanel.add(buscarButton);
+        topPanel.add(recarregarButton);
 
         // Painel tabela
-        String[] colunas = {"ID", "Nome", "Categoria", "Marca", "Preço", "Estoque"};
+        String[] colunas = {"ID", "Nome", "Descrição", "Categoria", "Marca", "Preço", "Estoque"};
         tableModel = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -75,6 +81,7 @@ public class ProdutoView extends JFrame {
             }
         };
         produtosTable = new JTable(tableModel);
+        produtosTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(produtosTable);
 
         // Painel botões
@@ -97,56 +104,35 @@ public class ProdutoView extends JFrame {
 
         add(panel);
 
-        // Listeners
-        buscarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                buscarProduto();
-            }
-        });
-
-        novoButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                novoProduto();
-            }
-        });
-
-        editarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                editarProduto();
-            }
-        });
-
-        excluirButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                excluirProduto();
-            }
-        });
-
-        fecharButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                if (menuView != null) {
-                    menuView.setVisible(true);
-                }
-            }
-        });
+        configurarListeners();
     }
 
-    private void buscarProduto() {
+    private void configurarListeners() {
+        buscarButton.addActionListener(e -> buscarProdutos());
+        recarregarButton.addActionListener(e -> carregarDados());
+        novoButton.addActionListener(e -> novoProduto());
+        editarButton.addActionListener(e -> editarProduto());
+        excluirButton.addActionListener(e -> excluirProduto());
+        fecharButton.addActionListener(e -> fecharTela());
+        buscaField.addActionListener(e -> buscarProdutos());
+    }
+
+    private void buscarProdutos() {
         String termo = buscaField.getText();
         String categoria = (String) categoriaCombo.getSelectedItem();
 
-        if (termo.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Digite algo para buscar!", "Aviso", JOptionPane.WARNING_MESSAGE);
-        } else {
+        List<ProdutoEntity> produtos = controller.buscarProdutos(termo, categoria);
+        atualizarTabela(produtos);
+
+        if (produtos.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Buscando por: " + termo + "\nCategoria: " + categoria,
+                    "Nenhum produto encontrado com os filtros aplicados.",
                     "Busca", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     private void novoProduto() {
-        CadastroProdutoView cadastroView = new CadastroProdutoView(this);
+        CadastroProdutoView cadastroView = new CadastroProdutoView(this, controller);
         cadastroView.setVisible(true);
     }
 
@@ -158,8 +144,15 @@ public class ProdutoView extends JFrame {
             return;
         }
 
-        EdicaoProdutoView edicaoView = new EdicaoProdutoView(this, linha);
-        edicaoView.setVisible(true);
+        Integer id = (Integer) tableModel.getValueAt(linha, 0);
+        ProdutoEntity produto = controller.buscarPorId(id);
+
+        if (produto != null) {
+            EdicaoProdutoView edicaoView = new EdicaoProdutoView(this, controller, produto);
+            edicaoView.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Produto não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void excluirProduto() {
@@ -170,6 +163,7 @@ public class ProdutoView extends JFrame {
             return;
         }
 
+        Integer id = (Integer) tableModel.getValueAt(linha, 0);
         String nome = (String) tableModel.getValueAt(linha, 1);
 
         int opcao = JOptionPane.showConfirmDialog(this,
@@ -178,22 +172,50 @@ public class ProdutoView extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (opcao == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            if (controller.excluirProduto(id)) {
+                JOptionPane.showMessageDialog(this, "Produto excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                carregarDados();
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao excluir produto!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    private void carregarProdutos() {
-        Object[][] produtos = {
-                {1, "exemplo01", "categoria01", "marca01", "R$ 100,00", "10"},
-                {2, "exemplo02", "categoria02", "marca02", "R$ 200,00", "5"},
-                {3, "exemplo03", "categoria03", "marca03", "R$ 300,00", "15"},
-                {4, "exemplo04", "categoria04", "marca04", "R$ 400,00", "8"},
-                {5, "exemplo05", "categoria05", "marca05", "R$ 500,00", "20"}
-        };
-
-        for (Object[] produto : produtos) {
-            tableModel.addRow(produto);
+    private void fecharTela() {
+        dispose();
+        if (menuView != null) {
+            menuView.setVisible(true);
         }
+    }
+
+    private void carregarDados() {
+        carregarProdutos();
+        carregarCategorias();
+    }
+
+    private void carregarProdutos() {
+        List<ProdutoEntity> produtos = controller.listarProdutos();
+        atualizarTabela(produtos);
+    }
+
+    private void atualizarTabela(List<ProdutoEntity> produtos) {
+        tableModel.setRowCount(0);
+        for (ProdutoEntity produto : produtos) {
+            Object[] linha = controller.formatarProdutoParaTabela(produto);
+            tableModel.addRow(linha);
+        }
+    }
+
+    private void carregarCategorias() {
+        List<String> categorias = controller.listarCategorias();
+        categoriaCombo.removeAllItems();
+        for (String categoria : categorias) {
+            categoriaCombo.addItem(categoria);
+        }
+    }
+
+    public void atualizarDados() {
+        carregarDados();
     }
 
     public void iniciar() {
@@ -201,25 +223,29 @@ public class ProdutoView extends JFrame {
     }
 }
 
-// Classe cadastro
+// Classe cadastro sem lógica de negócio
 class CadastroProdutoView extends JFrame {
     private JTextField nomeField;
-    private JTextField categoriaField;
+    private JTextArea descricaoArea;
+    private JComboBox<String> categoriaCombo;
     private JTextField marcaField;
     private JTextField precoField;
     private JTextField estoqueField;
     private JButton cadastrarButton;
     private JButton voltarButton;
     private ProdutoView produtoView;
+    private ProdutoController controller;
 
-    public CadastroProdutoView(ProdutoView produtoView) {
+    public CadastroProdutoView(ProdutoView produtoView, ProdutoController controller) {
         this.produtoView = produtoView;
+        this.controller = controller;
         setTitle("Cadastro de Produto");
-        setSize(400, 300);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         initComponents();
+        carregarCategorias();
     }
 
     private void initComponents() {
@@ -227,6 +253,7 @@ class CadastroProdutoView extends JFrame {
         panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel titleLabel = new JLabel("=== CADASTRO DE PRODUTO ===");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -241,111 +268,223 @@ class CadastroProdutoView extends JFrame {
         // Nome
         gbc.gridx = 0;
         gbc.gridy = 1;
-        panel.add(new JLabel("Nome:"), gbc);
+        panel.add(new JLabel("Nome:*"), gbc);
 
-        nomeField = new JTextField(15);
+        nomeField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(nomeField, gbc);
 
-        // Categoria
+        // Descrição
         gbc.gridx = 0;
         gbc.gridy = 2;
+        panel.add(new JLabel("Descrição:"), gbc);
+
+        descricaoArea = new JTextArea(3, 20);
+        descricaoArea.setLineWrap(true);
+        descricaoArea.setWrapStyleWord(true);
+        JScrollPane descricaoScroll = new JScrollPane(descricaoArea);
+        gbc.gridx = 1;
+        panel.add(descricaoScroll, gbc);
+
+        // Categoria
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         panel.add(new JLabel("Categoria:"), gbc);
 
-        categoriaField = new JTextField(15);
+        JPanel categoriaPanel = new JPanel(new BorderLayout(5, 0));
+        categoriaCombo = new JComboBox<>();
+        categoriaCombo.setEditable(true);
+
+        JButton novaCategoriaButton = new JButton("Nova");
+        novaCategoriaButton.setPreferredSize(new Dimension(60, 25));
+
+        categoriaPanel.add(categoriaCombo, BorderLayout.CENTER);
+        categoriaPanel.add(novaCategoriaButton, BorderLayout.EAST);
+
         gbc.gridx = 1;
-        panel.add(categoriaField, gbc);
+        panel.add(categoriaPanel, gbc);
+
+        // Listener para nova categoria
+        novaCategoriaButton.addActionListener(e -> criarNovaCategoria());
 
         // Marca
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         panel.add(new JLabel("Marca:"), gbc);
 
-        marcaField = new JTextField(15);
+        marcaField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(marcaField, gbc);
 
         // Preço
         gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(new JLabel("Preço:"), gbc);
+        gbc.gridy = 5;
+        panel.add(new JLabel("Preço:*"), gbc);
 
-        precoField = new JTextField(15);
+        precoField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(precoField, gbc);
 
         // Estoque
         gbc.gridx = 0;
-        gbc.gridy = 5;
-        panel.add(new JLabel("Estoque:"), gbc);
+        gbc.gridy = 6;
+        panel.add(new JLabel("Estoque:*"), gbc);
 
-        estoqueField = new JTextField(15);
+        estoqueField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(estoqueField, gbc);
 
-        // Botões
-        cadastrarButton = new JButton("Cadastrar");
+        // Nota sobre campos obrigatórios
+        JLabel notaLabel = new JLabel("* Campos obrigatórios");
+        notaLabel.setFont(new Font("Arial", Font.ITALIC, 12));
         gbc.gridx = 0;
-        gbc.gridy = 6;
-        panel.add(cadastrarButton, gbc);
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        panel.add(notaLabel, gbc);
 
+        // Botões
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        cadastrarButton = new JButton("Cadastrar");
         voltarButton = new JButton("Voltar");
-        gbc.gridx = 1;
-        panel.add(voltarButton, gbc);
+
+        buttonPanel.add(cadastrarButton);
+        buttonPanel.add(voltarButton);
+
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        gbc.gridwidth = 2;
+        panel.add(buttonPanel, gbc);
 
         add(panel);
 
-        // Listeners
-        cadastrarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String nome = nomeField.getText();
-                String categoria = categoriaField.getText();
-                String marca = marcaField.getText();
-                String preco = precoField.getText();
-                String estoque = estoqueField.getText();
+        configurarListeners();
+        nomeField.requestFocus();
+    }
 
-                if (nome.trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(CadastroProdutoView.this, "Nome é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+    private void configurarListeners() {
+        cadastrarButton.addActionListener(e -> cadastrarProduto());
+        voltarButton.addActionListener(e -> dispose());
+    }
 
-                JOptionPane.showMessageDialog(CadastroProdutoView.this,
-                        "Produto cadastrado:\nNome: " + nome + "\nCategoria: " + categoria + "\nMarca: " + marca + "\nPreço: R$ " + preco + "\nEstoque: " + estoque,
+    private void criarNovaCategoria() {
+        String novaCategoria = JOptionPane.showInputDialog(
+                this,
+                "Digite o nome da nova categoria:",
+                "Nova Categoria",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (novaCategoria != null && !novaCategoria.trim().isEmpty()) {
+            String resultado = controller.adicionarNovaCategoria(novaCategoria.trim(), categoriaCombo);
+
+            if (resultado.equals("ADICIONADA")) {
+                categoriaCombo.setSelectedItem(novaCategoria.trim());
+            } else if (resultado.equals("EXISTE")) {
+                JOptionPane.showMessageDialog(this,
+                        "Esta categoria já existe!",
+                        "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
+                categoriaCombo.setSelectedItem(novaCategoria.trim());
+            }
+        }
+    }
+
+    private void carregarCategorias() {
+        List<String> categorias = controller.listarCategoriasParaCadastro();
+        categoriaCombo.removeAllItems();
+        for (String categoria : categorias) {
+            categoriaCombo.addItem(categoria);
+        }
+    }
+
+    private void cadastrarProduto() {
+        String nome = nomeField.getText();
+        String descricao = descricaoArea.getText();
+        Object categoriaObj = categoriaCombo.getSelectedItem();
+        String categoria = categoriaObj != null ? categoriaObj.toString() : "";
+        String marca = marcaField.getText();
+        String precoStr = precoField.getText();
+        String estoqueStr = estoqueField.getText();
+
+        String resultado = controller.cadastrarProduto(nome, descricao, categoria, marca, precoStr, estoqueStr);
+
+        switch (resultado) {
+            case "SUCESSO":
+                JOptionPane.showMessageDialog(this,
+                        "Produto cadastrado com sucesso!",
                         "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
-                dispose();
-            }
-        });
+                produtoView.atualizarDados();
+                limparCampos();
+                nomeField.requestFocus();
+                break;
 
-        voltarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+            case "NOME_VAZIO":
+                JOptionPane.showMessageDialog(this, "Nome é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                nomeField.requestFocus();
+                break;
+
+            case "PRECO_VAZIO":
+                JOptionPane.showMessageDialog(this, "Preço é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                precoField.requestFocus();
+                break;
+
+            case "ESTOQUE_VAZIO":
+                JOptionPane.showMessageDialog(this, "Estoque é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                estoqueField.requestFocus();
+                break;
+
+            case "PRECO_INVALIDO":
+                JOptionPane.showMessageDialog(this, "Preço inválido! Use números com ponto ou vírgula para decimais.", "Erro", JOptionPane.ERROR_MESSAGE);
+                precoField.requestFocus();
+                break;
+
+            case "ESTOQUE_INVALIDO":
+                JOptionPane.showMessageDialog(this, "Estoque inválido! Use apenas números inteiros.", "Erro", JOptionPane.ERROR_MESSAGE);
+                estoqueField.requestFocus();
+                break;
+
+            default:
+                JOptionPane.showMessageDialog(this, "Erro ao cadastrar produto: " + resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void limparCampos() {
+        nomeField.setText("");
+        descricaoArea.setText("");
+        categoriaCombo.setSelectedIndex(0);
+        marcaField.setText("");
+        precoField.setText("");
+        estoqueField.setText("");
     }
 }
 
-// Classe edição
+// Classe edição sem lógica de negócio
 class EdicaoProdutoView extends JFrame {
     private JTextField nomeField;
-    private JTextField categoriaField;
+    private JTextArea descricaoArea;
+    private JComboBox<String> categoriaCombo;
     private JTextField marcaField;
     private JTextField precoField;
     private JTextField estoqueField;
     private JButton salvarButton;
     private JButton voltarButton;
     private ProdutoView produtoView;
-    private int linha;
+    private ProdutoController controller;
+    private ProdutoEntity produto;
 
-    public EdicaoProdutoView(ProdutoView produtoView, int linha) {
+    public EdicaoProdutoView(ProdutoView produtoView, ProdutoController controller, ProdutoEntity produto) {
         this.produtoView = produtoView;
-        this.linha = linha;
-        setTitle("Editar Produto");
-        setSize(400, 300);
+        this.controller = controller;
+        this.produto = produto;
+        setTitle("Editar Produto - " + produto.getNome());
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         initComponents();
+        carregarCategorias();
+        carregarDadosProduto();
     }
 
     private void initComponents() {
@@ -353,6 +492,7 @@ class EdicaoProdutoView extends JFrame {
         panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel titleLabel = new JLabel("=== EDITAR PRODUTO ===");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -364,71 +504,189 @@ class EdicaoProdutoView extends JFrame {
 
         gbc.gridwidth = 1;
 
+        // Nome
         gbc.gridx = 0;
         gbc.gridy = 1;
-        panel.add(new JLabel("Nome:"), gbc);
+        panel.add(new JLabel("Nome:*"), gbc);
 
-        nomeField = new JTextField("Nome do produto", 15);
+        nomeField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(nomeField, gbc);
 
+        // Descrição
         gbc.gridx = 0;
         gbc.gridy = 2;
-        panel.add(new JLabel("Categoria:"), gbc);
+        panel.add(new JLabel("Descrição:"), gbc);
 
-        categoriaField = new JTextField("Categoria", 15);
+        descricaoArea = new JTextArea(3, 20);
+        descricaoArea.setLineWrap(true);
+        descricaoArea.setWrapStyleWord(true);
+        JScrollPane descricaoScroll = new JScrollPane(descricaoArea);
         gbc.gridx = 1;
-        panel.add(categoriaField, gbc);
+        panel.add(descricaoScroll, gbc);
 
+        // Categoria
         gbc.gridx = 0;
         gbc.gridy = 3;
+        panel.add(new JLabel("Categoria:"), gbc);
+
+        JPanel categoriaPanel = new JPanel(new BorderLayout(5, 0));
+        categoriaCombo = new JComboBox<>();
+        categoriaCombo.setEditable(true);
+
+        JButton novaCategoriaButton = new JButton("Nova");
+        novaCategoriaButton.setPreferredSize(new Dimension(60, 25));
+
+        categoriaPanel.add(categoriaCombo, BorderLayout.CENTER);
+        categoriaPanel.add(novaCategoriaButton, BorderLayout.EAST);
+
+        gbc.gridx = 1;
+        panel.add(categoriaPanel, gbc);
+
+        // Listener para nova categoria
+        novaCategoriaButton.addActionListener(e -> criarNovaCategoria());
+
+        // Marca
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         panel.add(new JLabel("Marca:"), gbc);
 
-        marcaField = new JTextField("Marca", 15);
+        marcaField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(marcaField, gbc);
 
+        // Preço
         gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(new JLabel("Preço:"), gbc);
+        gbc.gridy = 5;
+        panel.add(new JLabel("Preço:*"), gbc);
 
-        precoField = new JTextField("0,00", 15);
+        precoField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(precoField, gbc);
 
+        // Estoque
         gbc.gridx = 0;
-        gbc.gridy = 5;
-        panel.add(new JLabel("Estoque:"), gbc);
+        gbc.gridy = 6;
+        panel.add(new JLabel("Estoque:*"), gbc);
 
-        estoqueField = new JTextField("0", 15);
+        estoqueField = new JTextField(20);
         gbc.gridx = 1;
         panel.add(estoqueField, gbc);
 
-        // Botões
-        salvarButton = new JButton("Salvar");
+        // Nota sobre campos obrigatórios
+        JLabel notaLabel = new JLabel("* Campos obrigatórios");
+        notaLabel.setFont(new Font("Arial", Font.ITALIC, 12));
         gbc.gridx = 0;
-        gbc.gridy = 6;
-        panel.add(salvarButton, gbc);
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        panel.add(notaLabel, gbc);
 
+        // Botões
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        salvarButton = new JButton("Salvar");
         voltarButton = new JButton("Voltar");
-        gbc.gridx = 1;
-        panel.add(voltarButton, gbc);
+
+        buttonPanel.add(salvarButton);
+        buttonPanel.add(voltarButton);
+
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        gbc.gridwidth = 2;
+        panel.add(buttonPanel, gbc);
 
         add(panel);
 
-        salvarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(EdicaoProdutoView.this,
+        configurarListeners();
+    }
+
+    private void configurarListeners() {
+        salvarButton.addActionListener(e -> salvarProduto());
+        voltarButton.addActionListener(e -> dispose());
+    }
+
+    private void criarNovaCategoria() {
+        String novaCategoria = JOptionPane.showInputDialog(
+                this,
+                "Digite o nome da nova categoria:",
+                "Nova Categoria",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (novaCategoria != null && !novaCategoria.trim().isEmpty()) {
+            String resultado = controller.adicionarNovaCategoria(novaCategoria.trim(), categoriaCombo);
+
+            if (resultado.equals("ADICIONADA")) {
+                categoriaCombo.setSelectedItem(novaCategoria.trim());
+            } else if (resultado.equals("EXISTE")) {
+                JOptionPane.showMessageDialog(this,
+                        "Esta categoria já existe!",
+                        "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
+                categoriaCombo.setSelectedItem(novaCategoria.trim());
+            }
+        }
+    }
+
+    private void carregarCategorias() {
+        List<String> categorias = controller.listarCategoriasParaCadastro();
+        categoriaCombo.removeAllItems();
+        for (String categoria : categorias) {
+            categoriaCombo.addItem(categoria);
+        }
+    }
+
+    private void carregarDadosProduto() {
+        controller.preencherCamposEdicao(produto, nomeField, descricaoArea, categoriaCombo, marcaField, precoField, estoqueField);
+    }
+
+    private void salvarProduto() {
+        String nome = nomeField.getText();
+        String descricao = descricaoArea.getText();
+        Object categoriaObj = categoriaCombo.getSelectedItem();
+        String categoria = categoriaObj != null ? categoriaObj.toString() : "";
+        String marca = marcaField.getText();
+        String precoStr = precoField.getText();
+        String estoqueStr = estoqueField.getText();
+
+        String resultado = controller.atualizarProduto(produto, nome, descricao, categoria, marca, precoStr, estoqueStr);
+
+        switch (resultado) {
+            case "SUCESSO":
+                JOptionPane.showMessageDialog(this,
                         "Produto atualizado com sucesso!",
                         "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
-            }
-        });
 
-        voltarButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+                produtoView.atualizarDados();
                 dispose();
-            }
-        });
+                break;
+
+            case "NOME_VAZIO":
+                JOptionPane.showMessageDialog(this, "Nome é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                nomeField.requestFocus();
+                break;
+
+            case "PRECO_VAZIO":
+                JOptionPane.showMessageDialog(this, "Preço é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                precoField.requestFocus();
+                break;
+
+            case "ESTOQUE_VAZIO":
+                JOptionPane.showMessageDialog(this, "Estoque é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                estoqueField.requestFocus();
+                break;
+
+            case "PRECO_INVALIDO":
+                JOptionPane.showMessageDialog(this, "Preço inválido! Use números com ponto ou vírgula para decimais.", "Erro", JOptionPane.ERROR_MESSAGE);
+                precoField.requestFocus();
+                break;
+
+            case "ESTOQUE_INVALIDO":
+                JOptionPane.showMessageDialog(this, "Estoque inválido! Use apenas números inteiros.", "Erro", JOptionPane.ERROR_MESSAGE);
+                estoqueField.requestFocus();
+                break;
+
+            default:
+                JOptionPane.showMessageDialog(this, "Erro ao atualizar produto: " + resultado, "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

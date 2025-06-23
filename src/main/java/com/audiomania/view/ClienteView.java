@@ -38,7 +38,7 @@ public class ClienteView extends JFrame {
         setLocationRelativeTo(null);
 
         initComponents();
-        //carregarClientes();
+        carregarClientes();
     }
 
     private void initComponents() {
@@ -178,6 +178,7 @@ public class ClienteView extends JFrame {
             menuView.setVisible(true);
         }
     }
+
     private void carregarClientes() {
         List<ClienteEntity> clientes = controller.listarClientes();
         atualizarTabela(clientes);
@@ -199,6 +200,7 @@ public class ClienteView extends JFrame {
         setVisible(true);
     }
 }
+
 // Classe cadastro sem lógica de negócio
 class CadastroClienteView extends JFrame {
     private JTextField nomeField;

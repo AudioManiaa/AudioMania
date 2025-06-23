@@ -39,7 +39,7 @@ public class MenuView extends JFrame {
 
     // Construtor padrão agora chama o construtor principal com null
     public MenuView() {
-        this(null); 
+        this(null);
     }
 
     /**
@@ -130,10 +130,9 @@ public class MenuView extends JFrame {
      * Abre a tela de gerenciamento de funcionários.
      */
     private void abrirFuncionarioView() {
-        FuncionarioView funcionarioView = new FuncionarioView();
+        FuncionarioView funcionarioView = new FuncionarioView(this);
         setVisible(false);
         funcionarioView.iniciarGerenciamento();
-        setVisible(true);
     }
 
     /**
