@@ -1,4 +1,4 @@
-package com.audiomania.service;
+package com.audiomania.model.service;
 
 import java.time.LocalDate;
 import java.sql.Connection;
@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.audiomania.entities.FuncionarioEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
 
 public class FuncionarioService {
 
@@ -16,7 +16,7 @@ public class FuncionarioService {
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/postgres",
                 "postgres",
-                "Ee2310");
+                "Wellsny321@");
     }
 
     public static FuncionarioEntity autenticar(String cpf, String senha) {
@@ -100,14 +100,13 @@ public class FuncionarioService {
         return funcionarios;
     }
 
-    public static boolean cadastrarFuncionario(String nome, String cpf, String cargo,
-                                               String telefone, String senha) {
+    public static boolean cadastrarFuncionario(FuncionarioEntity funcionario) {
         try {
             Connection conn = getConnection();
 
             String checkSql = "SELECT COUNT(*) FROM FUNCIONARIO WHERE CPF = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkSql);
-            checkStmt.setString(1, cpf);
+            checkStmt.setString(1, funcionario.getCpf());
             ResultSet rs = checkStmt.executeQuery();
 
             if (rs.next() && rs.getInt(1) > 0) {
@@ -119,12 +118,12 @@ public class FuncionarioService {
 
             String sql = "INSERT INTO FUNCIONARIO (Nome, CPF, Cargo, Telefone, Data_Admissao, Senha) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, nome);
-            stmt.setString(2, cpf);
-            stmt.setString(3, cargo);
-            stmt.setString(4, telefone);
-            stmt.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
-            stmt.setString(6, senha);
+            stmt.setString(1, funcionario.getNome());
+            stmt.setString(2, funcionario.getCpf());
+            stmt.setString(3, funcionario.getCargo());
+            stmt.setString(4, funcionario.getTelefone());
+            stmt.setDate(5, java.sql.Date.valueOf(LocalDate.now())); // Data de admissão é a data atual
+            stmt.setString(6, funcionario.getSenha()); // Idealmente, a senha deve ser hashed aqui ou antes
 
             int linhasAfetadas = stmt.executeUpdate();
 
@@ -138,7 +137,7 @@ public class FuncionarioService {
         }
     }
 
-    public static boolean atualizarFuncionario(Integer id, String nome, String cargo,
+    public static boolean atualizarFuncionario(Integer id, String nome, String cpf, String cargo,
                                                String telefone, String senha) {
         try {
             Connection conn = getConnection();
@@ -159,23 +158,27 @@ public class FuncionarioService {
             rs.close();
             checkStmt.close();
 
-            String sql = "UPDATE FUNCIONARIO SET Nome = ?, Cargo = ?, Telefone = ?";
+            // Verificar se o novo CPF já existe para outro funcionário (opcional, mas recomendado)
+            // Para simplificar, vamos pular esta verificação por agora, mas em um sistema real seria importante.
+
+            String sql = "UPDATE FUNCIONARIO SET Nome = ?, CPF = ?, Cargo = ?, Telefone = ?";
+            int parameterIndex = 1;
+
             if (senha != null && !senha.isEmpty()) {
                 sql += ", Senha = ?";
             }
             sql += " WHERE Id_Funcionario = ?";
 
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, nome);
-            stmt.setString(2, cargo);
-            stmt.setString(3, telefone);
+            stmt.setString(parameterIndex++, nome);
+            stmt.setString(parameterIndex++, cpf);
+            stmt.setString(parameterIndex++, cargo);
+            stmt.setString(parameterIndex++, telefone);
 
             if (senha != null && !senha.isEmpty()) {
-                stmt.setString(4, senha);
-                stmt.setInt(5, id);
-            } else {
-                stmt.setInt(4, id);
+                stmt.setString(parameterIndex++, senha);
             }
+            stmt.setInt(parameterIndex++, id);
 
             int linhasAfetadas = stmt.executeUpdate();
 

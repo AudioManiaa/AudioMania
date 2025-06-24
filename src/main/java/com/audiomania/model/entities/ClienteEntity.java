@@ -1,4 +1,4 @@
-package com.audiomania.entities;
+package com.audiomania.model.entities;
 
 import java.time.LocalDate;
 import jakarta.persistence.*;

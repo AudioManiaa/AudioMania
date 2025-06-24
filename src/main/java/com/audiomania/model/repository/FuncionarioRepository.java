@@ -1,6 +1,6 @@
-package com.audiomania.repository;
+package com.audiomania.model.repository;
 
-import com.audiomania.entities.ClienteEntity;
+import com.audiomania.model.entities.FuncionarioEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
@@ -8,20 +8,36 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class ClienteRepository {
+public class FuncionarioRepository {
 
     private EntityManagerFactory emf;
 
-    public ClienteRepository() {
+    public FuncionarioRepository() {
         this.emf = Persistence.createEntityManagerFactory("meuPU");
     }
 
-    public ClienteEntity buscarPorCpf(String cpf) {
+    public FuncionarioEntity autenticar(String cpf, String senha) {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<ClienteEntity> query = em.createQuery(
-                    "SELECT c FROM ClienteEntity c WHERE c.cpf = :cpf",
-                    ClienteEntity.class);
+            TypedQuery<FuncionarioEntity> query = em.createQuery(
+                    "SELECT f FROM FuncionarioEntity f WHERE f.cpf = :cpf AND f.senha = :senha",
+                    FuncionarioEntity.class);
+            query.setParameter("cpf", cpf);
+            query.setParameter("senha", senha);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public FuncionarioEntity buscarPorCpf(String cpf) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<FuncionarioEntity> query = em.createQuery(
+                    "SELECT f FROM FuncionarioEntity f WHERE f.cpf = :cpf",
+                    FuncionarioEntity.class);
             query.setParameter("cpf", cpf);
             return query.getSingleResult();
         } catch (NoResultException e) {
@@ -31,32 +47,32 @@ public class ClienteRepository {
         }
     }
 
-    public ClienteEntity buscarPorId(Integer id) {
+    public FuncionarioEntity buscarPorId(Integer id) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(ClienteEntity.class, id);
+            return em.find(FuncionarioEntity.class, id);
         } finally {
             em.close();
         }
     }
 
-    public List<ClienteEntity> listarTodos() {
+    public List<FuncionarioEntity> listarTodos() {
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<ClienteEntity> query = em.createQuery(
-                    "SELECT c FROM ClienteEntity c ORDER BY c.nome",
-                    ClienteEntity.class);
+            TypedQuery<FuncionarioEntity> query = em.createQuery(
+                    "SELECT f FROM FuncionarioEntity f ORDER BY f.nome",
+                    FuncionarioEntity.class);
             return query.getResultList();
         } finally {
             em.close();
         }
     }
 
-    public boolean salvar(ClienteEntity cliente) {
+    public boolean salvar(FuncionarioEntity funcionario) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(cliente);
+            em.persist(funcionario);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -70,11 +86,11 @@ public class ClienteRepository {
         }
     }
 
-    public boolean atualizar(ClienteEntity cliente) {
+    public boolean atualizar(FuncionarioEntity funcionario) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(cliente);
+            em.merge(funcionario);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -92,9 +108,9 @@ public class ClienteRepository {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            ClienteEntity cliente = em.find(ClienteEntity.class, id);
-            if (cliente != null) {
-                em.remove(cliente);
+            FuncionarioEntity funcionario = em.find(FuncionarioEntity.class, id);
+            if (funcionario != null) {
+                em.remove(funcionario);
                 em.getTransaction().commit();
                 return true;
             } else {
